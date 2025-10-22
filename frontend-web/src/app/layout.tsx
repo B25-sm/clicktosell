@@ -8,6 +8,11 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'OLX Classifieds - Buy & Sell Anything',
   description: 'Buy and sell anything locally with OLX Classifieds. Find great deals on electronics, furniture, vehicles, and more.',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
