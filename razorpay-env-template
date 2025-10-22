@@ -1,0 +1,19 @@
+# Razorpay Payment Gateway Configuration
+# Get these from https://dashboard.razorpay.com/
+
+# Razorpay Test Credentials (for development)
+RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxxxxxxxxxxxx
+RAZORPAY_KEY_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Razorpay Live Credentials (for production)
+# RAZORPAY_KEY_ID=rzp_live_xxxxxxxxxxxxxxxxxxxx
+# RAZORPAY_KEY_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Webhook Secret (optional, for payment notifications)
+RAZORPAY_WEBHOOK_SECRET=your_webhook_secret_here
+
+
+
+
+
+

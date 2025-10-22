@@ -1,0 +1,34 @@
+{
+  "name": "olx-classifieds",
+  "version": "1.0.0",
+  "description": "OLX-like classifieds application with React Native mobile app and Next.js web platform",
+  "main": "index.js",
+  "scripts": {
+    "backend": "cd backend && npm start",
+    "web": "cd frontend-web && npm run dev",
+    "mobile": "cd mobile-app && npx react-native start",
+    "admin": "cd admin-panel && npm run dev",
+    "install-all": "npm install && cd backend && npm install && cd ../frontend-web && npm install && cd ../mobile-app && npm install && cd ../admin-panel && npm install",
+    "dev": "concurrently \"npm run backend\" \"npm run web\"",
+    "build": "cd frontend-web && npm run build && cd ../admin-panel && npm run build"
+  },
+  "keywords": [
+    "classifieds",
+    "marketplace",
+    "react-native",
+    "nextjs",
+    "nodejs",
+    "mongodb"
+  ],
+  "author": "Sai Mahendra",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "mongodb": "^6.19.0",
+    "redis": "^5.8.2"
+  }
+}
+
+

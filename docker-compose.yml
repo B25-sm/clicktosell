@@ -1,0 +1,198 @@
+version: '3.8'
+
+services:
+  # MongoDB Database - Production Optimized
+  mongodb:
+    image: mongo:7.0
+    container_name: olx-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: olx-classifieds
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - olx-network
+    command: >
+      mongod 
+      --wiredTigerCacheSizeGB 2
+      --maxConns 1000
+      --logRotate reopen
+      --logappend
+      --bind_ip_all
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+
+  # Redis Cache - Production Optimized
+  redis:
+    image: redis:7.2-alpine
+    container_name: olx-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: >
+      redis-server 
+      --appendonly yes 
+      --requirepass redis123
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+      --tcp-keepalive 60
+      --timeout 300
+      --tcp-backlog 511
+      --databases 16
+    volumes:
+      - redis_data:/data
+    networks:
+      - olx-network
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+
+  # Elasticsearch - Production Optimized
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    container_name: olx-elasticsearch
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - "indices.memory.index_buffer_size=20%"
+      - "indices.queries.cache.size=10%"
+      - "thread_pool.write.queue_size=1000"
+      - "thread_pool.search.queue_size=1000"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - olx-network
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+
+  # Backend API - Production Optimized
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: olx-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/olx-classifieds?authSource=admin&maxPoolSize=50&minPoolSize=10
+      REDIS_URL: redis://:redis123@redis:6379
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      JWT_SECRET: 9de1b20623ed27d0274b933962097cafb4f59ead44fc721b238271eef14d960a3ab795bcdf5d8a6a92500d2845355c
+      JWT_REFRESH_SECRET: ba27f7f3a5ef61e7ea572661964f4d36b91a5769ed477e0e01b47802dd07ebfe12c4b987cebd45c6db079c1281126c353443ab167f8a593b42ccd02b870ebc82
+      # Production optimizations
+      UV_THREADPOOL_SIZE: 16
+      NODE_OPTIONS: "--max-old-space-size=2048"
+      # Add other environment variables as needed
+    volumes:
+      - ./backend/logs:/app/logs
+      - ./uploads:/app/uploads
+    depends_on:
+      - mongodb
+      - redis
+      - elasticsearch
+    networks:
+      - olx-network
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Web
+  frontend:
+    build:
+      context: ./frontend-web
+      dockerfile: Dockerfile
+    container_name: olx-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${API_URL:-http://localhost:5000}
+      NEXT_PUBLIC_SITE_URL: ${FRONTEND_URL:-http://localhost:3000}
+    depends_on:
+      - backend
+    networks:
+      - olx-network
+
+  # Admin Panel
+  admin:
+    build:
+      context: ./admin-panel
+      dockerfile: Dockerfile
+    container_name: olx-admin
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      NODE_ENV: production
+      REACT_APP_API_URL: ${API_URL:-http://localhost:5000}
+    depends_on:
+      - backend
+    networks:
+      - olx-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: olx-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      - backend
+      - frontend
+      - admin
+    networks:
+      - olx-network
+
+networks:
+  olx-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+
