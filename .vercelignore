@@ -1,0 +1,5 @@
+# Ignore everything except frontend-web
+*
+!frontend-web/
+!package.json
+!vercel.json
