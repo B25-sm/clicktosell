@@ -26,23 +26,20 @@ The **DEPLOYMENT_NOT_FOUND** error occurred because:
 {
   "buildCommand": "npm install && npm run build",
   "installCommand": "npm install",
-  "framework": "nextjs",
-  "projectSettings": {
-    "rootDirectory": "frontend-web"
-  }
+  "framework": "nextjs"
 }
 ```
 
 **Key changes:**
 - ❌ Removed `version: 2` (not needed anymore)
 - ❌ Removed `cd frontend-web` from commands (doesn't work in Vercel)
-- ✅ Added `projectSettings.rootDirectory` - **THIS IS THE KEY FIX**
-- ✅ Simplified build commands (they run from `frontend-web` automatically)
+- ✅ Simplified build commands - **BUT**: Root Directory must be set in **Vercel Dashboard**
 - ✅ Clean, minimal configuration
 
 **Why this works:**
-- `rootDirectory` tells Vercel: "The Next.js project starts here"
-- All commands run from `frontend-web` directory automatically
+- Root Directory must be set in **Vercel Dashboard → Settings → General**
+- `vercel.json` cannot set `rootDirectory` (not a valid property)
+- Once set in dashboard, all commands run from `frontend-web` automatically
 - No need for `cd` commands that confuse the build system
 
 #### ✅ Fixed `.vercelignore`
@@ -96,10 +93,11 @@ Go to: **Project Settings → General**
 | **Install Command** | (Leave empty - uses vercel.json) |
 | **Framework Preset** | Next.js |
 
-**Important Notes:**
-- ⚠️ **Set Root Directory to `frontend-web`** in dashboard
+**CRITICAL:**
+- ⚠️ **YOU MUST** set Root Directory to `frontend-web` in Vercel Dashboard
+- ⚠️ **Root Directory is NOT set in vercel.json** (not a valid property)
 - ⚠️ **DON'T** override Output Directory
-- ✅ Use `projectSettings.rootDirectory` in vercel.json
+- ✅ Build commands run from the Root Directory you set
 - ✅ Let Vercel handle everything else
 
 ---
