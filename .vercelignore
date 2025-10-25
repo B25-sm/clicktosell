@@ -3,6 +3,34 @@
 !frontend-web/
 !package.json
 !vercel.json
+!node_modules/
+
+# Specifically ignore these directories
+app/
+backend/
+mobile-app/
+admin-panel/
+olx-classifieds/
+scripts/
+gradle/
+nginx/
+
+# Ignore build artifacts and logs
+*.log
+logs/
+build/
+.next/
+dist/
+
+# Ignore environment files
+.env
+.env.local
+.env.*.local
+*.env
+
+# Ignore documentation
+*.md
+!README.md
 
 
 
