@@ -1,11 +1,12 @@
-import { Metadata } from 'next';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'OLX Classifieds - Buy & Sell Anything Locally',
-  description: 'Discover amazing deals on electronics, furniture, vehicles, and more. Join millions of users buying and selling locally with OLX Classifieds.',
-};
+import { Metadata } from 'next';
+import { useListings } from '@/hooks/useApi';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PlaceholderImage } from '@/components/PlaceholderImage';
 
 export default function HomePage() {
+  const { data: listingsData, loading, error } = useListings();
   return (
     <div className="min-h-screen bg-[color:var(--bg,theme(colors.brand.gray))]">
       {/* Header */}
@@ -70,22 +71,53 @@ export default function HomePage() {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12 text-[color:theme(colors.brand.midnight)]">Featured Listings</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { title: 'iPhone 13 Pro', price: '₹50,000', location: 'Mumbai', image: '📱' },
-              { title: 'Samsung Galaxy S21', price: '₹45,000', location: 'Delhi', image: '📱' },
-              { title: 'MacBook Pro M2', price: '₹1,20,000', location: 'Bangalore', image: '💻' },
-            ].map((item, index) => (
-              <div key={index} className="bg-white border border-[color:theme(colors.brand.gray)] rounded-lg shadow-sm hover:shadow-md transition">
-                <div className="p-4">
-                  <div className="text-4xl mb-3 text-center">{item.image}</div>
-                  <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
-                  <p className="text-[color:theme(colors.brand.midnight)] font-bold text-xl mb-2">{item.price}</p>
-                  <p className="text-gray-600 text-sm">{item.location}</p>
+          
+          {loading && (
+            <div className="flex justify-center items-center py-12">
+              <LoadingSpinner size="lg" />
+            </div>
+          )}
+          
+          {error && (
+            <div className="text-center py-12">
+              <p className="text-red-600 mb-4">Failed to load listings: {error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="px-4 py-2 bg-[color:theme(colors.brand.midnight)] text-white rounded hover:opacity-90"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+          
+          {listingsData && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {listingsData.listings.map((item) => (
+                <div key={item.id} className="bg-white border border-[color:theme(colors.brand.gray)] rounded-lg shadow-sm hover:shadow-md transition">
+                  <div className="p-4">
+                    <div className="aspect-w-16 aspect-h-9 mb-3">
+                      <PlaceholderImage 
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-48 object-cover rounded"
+                        fallbackText="No Image"
+                      />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
+                    <p className="text-[color:theme(colors.brand.midnight)] font-bold text-xl mb-2">₹{item.price.toLocaleString()}</p>
+                    <p className="text-gray-600 text-sm">{item.location}</p>
+                    <p className="text-gray-500 text-xs mt-1">{item.category}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+          
+          {!loading && !error && listingsData && listingsData.listings.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No listings available at the moment.</p>
+            </div>
+          )}
         </div>
       </section>
 

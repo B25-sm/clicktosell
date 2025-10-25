@@ -16,3 +16,6 @@ Set these in your Vercel dashboard under Project Settings > Environment Variable
 3. Go to "Environment Variables"
 4. Add each variable with appropriate values
 5. Redeploy your project
+
+
+

@@ -3,6 +3,7 @@
 import { ReactNode } from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { SocketProvider } from '@/contexts/SocketContext';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -10,10 +11,12 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <AuthProvider>
-      <SocketProvider>
-        {children}
-      </SocketProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <SocketProvider>
+          {children}
+        </SocketProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

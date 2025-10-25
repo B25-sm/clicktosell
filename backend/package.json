@@ -4,8 +4,8 @@
   "description": "Backend API for OLX-like classifieds application",
   "main": "server.js",
   "scripts": {
-    "start": "node simple-server.js",
-    "dev": "nodemon simple-server.js",
+    "start": "node fixed-server.js",
+    "dev": "nodemon fixed-server.js",
     "test": "jest",
     "seed": "node scripts/seedDatabase.js"
   },

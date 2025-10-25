@@ -14,6 +14,9 @@ const nextConfig = {
     CUSTOM_KEY: 'my-value',
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
   },
+  experimental: {
+    serverComponentsExternalPackages: ['axios'],
+  },
   async rewrites() {
     return [
       {
@@ -46,11 +49,24 @@ const nextConfig = {
     ];
   },
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Custom webpack configuration
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-    };
+    // Custom webpack configuration for client-side only
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+        stream: false,
+        util: false,
+        url: false,
+        assert: false,
+        http: false,
+        https: false,
+        os: false,
+        buffer: false,
+      };
+    }
     
     return config;
   },
@@ -58,9 +74,26 @@ const nextConfig = {
     // Remove console logs in production
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  // Suppress hydration warnings for browser extensions
+  onDemandEntries: {
+    // period (in ms) where the server will keep pages in the buffer
+    maxInactiveAge: 25 * 1000,
+    // number of pages that should be kept simultaneously without being disposed
+    pagesBufferLength: 2,
+  },
   poweredByHeader: false,
   reactStrictMode: true,
   swcMinify: true,
+  // Fix HMR and chunk loading issues
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
+  // Improve development experience
+  devIndicators: {
+    buildActivity: true,
+    buildActivityPosition: 'bottom-right',
+  },
 };
 
 module.exports = nextConfig;

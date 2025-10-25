@@ -19,7 +19,17 @@ if (process.env.SENTRY_DSN && process.env.SENTRY_DSN !== 'your_sentry_dsn_for_er
   // Sentry request handler must be the first middleware
   app.use(Sentry.Handlers.requestHandler());
 }
-const PORT = process.env.PORT || 5000;
+
+// Parse PORT safely, ensuring it's a number
+let PORT = 5000; // Default port
+if (process.env.PORT) {
+  const parsedPort = parseInt(process.env.PORT, 10);
+  if (!isNaN(parsedPort) && parsedPort > 0 && parsedPort < 65536) {
+    PORT = parsedPort;
+  }
+}
+console.log('Environment PORT:', process.env.PORT);
+console.log('Using PORT:', PORT);
 
 // Middleware
 app.use(helmet());
@@ -113,6 +123,55 @@ app.get('/api/v1/listings', (req, res) => {
   });
 });
 
+// Email test endpoint
+app.post('/api/v1/email/test-config', (req, res) => {
+  const emailConfig = {
+    service: process.env.EMAIL_SERVICE,
+    user: process.env.EMAIL_USER,
+    from: process.env.EMAIL_FROM
+  };
+
+  if (!emailConfig.service || !emailConfig.user) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email configuration missing',
+      config: emailConfig
+    });
+  }
+
+  res.json({
+    success: true,
+    message: 'Email configuration is valid',
+    config: {
+      service: emailConfig.service,
+      user: emailConfig.user,
+      from: emailConfig.from
+    }
+  });
+});
+
+// Payment test endpoint
+app.post('/api/v1/payments/test/connection', (req, res) => {
+  const paymentConfig = {
+    razorpayKeyId: process.env.RAZORPAY_KEY_ID,
+    razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET ? '***configured***' : 'missing'
+  };
+
+  if (!process.env.RAZORPAY_KEY_ID) {
+    return res.status(400).json({
+      success: false,
+      message: 'Payment configuration missing',
+      config: paymentConfig
+    });
+  }
+
+  res.json({
+    success: true,
+    message: 'Payment configuration is valid',
+    config: paymentConfig
+  });
+});
+
 // Default route
 app.get('/', (req, res) => {
   res.json({
@@ -148,6 +207,15 @@ app.use((err, req, res, next) => {
   });
 });
 
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Endpoint not found',
+    path: req.originalUrl
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
@@ -156,5 +224,3 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
-
-

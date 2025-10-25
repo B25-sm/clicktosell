@@ -1,9 +1,7 @@
-import { Metadata } from 'next';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Test Page - OLX Classifieds',
-  description: 'Test page for OLX Classifieds application',
-};
+import { Metadata } from 'next';
+import { ConnectionTest } from '@/components/ConnectionTest';
 
 export default function TestPage() {
   return (
@@ -64,7 +62,9 @@ export default function TestPage() {
               </div>
             </div>
             
-            <div className="mt-8">
+            <div className="mt-8 space-y-6">
+              <ConnectionTest />
+              
               <a 
                 href="/" 
                 className="inline-flex items-center px-6 py-3 bg-[color:theme(colors.brand.midnight)] text-white rounded-lg hover:opacity-90 transition"
@@ -78,3 +78,6 @@ export default function TestPage() {
     </div>
   );
 }
+
+
+

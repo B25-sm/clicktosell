@@ -8,3 +8,6 @@ If the Vercel configuration fixes don't work, you can:
 4. Redeploy
 
 This is the cleanest solution for monorepos with a single frontend.
+
+
+

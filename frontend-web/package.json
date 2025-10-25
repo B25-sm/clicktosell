@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "clear-cache": "node clear-cache.js",
+    "dev:clean": "npm run clear-cache && npm run dev"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
