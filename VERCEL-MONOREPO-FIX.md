@@ -2,9 +2,9 @@
 
 ## ❌ Root Causes Identified
 
-1. **Incorrect `vercel.json`**: Using legacy `builds` API and wrong routing
-2. **Output Directory Override**: Specifying `.next` directory manually (Vercel handles this)
-3. **Missing Framework Detection**: Not letting Vercel auto-detect Next.js properly
+1. **DEPLOYMENT_NOT_FOUND**: Incorrect monorepo configuration causing Vercel to not detect the project properly
+2. **Using `cd` commands**: Build commands with `cd` don't work well with Vercel's environment
+3. **Missing Root Directory**: Need to explicitly tell Vercel where the Next.js app lives
 4. **Incomplete `.vercelignore`**: Not properly excluding other monorepo folders
 
 ---
@@ -13,31 +13,37 @@
 
 ### 1️⃣ Understanding the Issue
 
-The 404 error occurred because:
-- Vercel was trying to build from root instead of `frontend-web`
-- The legacy `builds` configuration was conflicting with auto-detection
-- Routing rules were pointing to `/frontend-web/$1` which doesn't exist in deployment
-- Next.js wasn't detected properly due to incorrect configuration
+The **DEPLOYMENT_NOT_FOUND** error occurred because:
+- Vercel couldn't find the deployment because the build context was wrong
+- Using `cd frontend-web && npm install` changes directory but doesn't change the project root for Vercel
+- Vercel needs to know WHERE the Next.js project starts (its root)
+- The deployment system couldn't map requests to the correct build output
 
 ### 2️⃣ Updated Files
 
-#### ✅ Fixed `vercel.json`
+#### ✅ Fixed `vercel.json` (CRITICAL FIX)
 ```json
 {
-  "version": 2,
-  "buildCommand": "cd frontend-web && npm install && npm run build",
-  "installCommand": "cd frontend-web && npm install",
-  "framework": "nextjs"
+  "buildCommand": "npm install && npm run build",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "projectSettings": {
+    "rootDirectory": "frontend-web"
+  }
 }
 ```
 
 **Key changes:**
-- ❌ Removed `outputDirectory` (Vercel handles this automatically)
-- ❌ Removed `builds` array (legacy API)
-- ❌ Removed `routes` array (not needed for Next.js)
-- ✅ Added explicit `buildCommand` to target `frontend-web`
-- ✅ Added `framework: "nextjs"` for proper detection
+- ❌ Removed `version: 2` (not needed anymore)
+- ❌ Removed `cd frontend-web` from commands (doesn't work in Vercel)
+- ✅ Added `projectSettings.rootDirectory` - **THIS IS THE KEY FIX**
+- ✅ Simplified build commands (they run from `frontend-web` automatically)
 - ✅ Clean, minimal configuration
+
+**Why this works:**
+- `rootDirectory` tells Vercel: "The Next.js project starts here"
+- All commands run from `frontend-web` directory automatically
+- No need for `cd` commands that confuse the build system
 
 #### ✅ Fixed `.vercelignore`
 ```
@@ -76,38 +82,7 @@ dist/
 !README.md
 ```
 
-### 3️⃣ Verified Route Structure
-
-The app uses **Next.js App Router** with:
-```
-frontend-web/src/app/page.tsx  ✅ Valid home route
-frontend-web/src/app/layout.tsx  ✅ Root layout
-```
-
----
-
-## 🧩 Correct Vercel Configuration
-
-### In `vercel.json` (at root):
-```json
-{
-  "version": 2,
-  "buildCommand": "cd frontend-web && npm install && npm run build",
-  "installCommand": "cd frontend-web && npm install",
-  "framework": "nextjs"
-}
-```
-
-### Why This Works:
-1. **`buildCommand`**: Explicitly runs build inside `frontend-web` folder
-2. **`installCommand`**: Installs dependencies in the correct location
-3. **`framework: "nextjs"`**: Tells Vercel to use Next.js optimizations
-4. **No outputDirectory**: Vercel automatically finds `.next` folder
-5. **No manual routing**: Next.js handles routing automatically
-
----
-
-## ⚙️ Correct Vercel Dashboard Settings
+### 3️⃣ Vercel Dashboard Settings
 
 Go to: **Project Settings → General**
 
@@ -115,156 +90,105 @@ Go to: **Project Settings → General**
 
 | Setting | Value |
 |---------|-------|
-| **Root Directory** | (Leave empty) |
-| **Build Command** | `cd frontend-web && npm install && npm run build` |
+| **Root Directory** | `frontend-web` |
+| **Build Command** | (Leave empty - uses vercel.json) |
 | **Output Directory** | (Leave empty - let Vercel detect) |
-| **Install Command** | `cd frontend-web && npm install` |
-| **Development Command** | `cd frontend-web && npm run dev` |
+| **Install Command** | (Leave empty - uses vercel.json) |
 | **Framework Preset** | Next.js |
 
 **Important Notes:**
-- ⚠️ **DON'T** set Output Directory to `.next` or `frontend-web/.next`
-- ⚠️ **DON'T** set Root Directory to `frontend-web` (this breaks detection)
-- ✅ Let Vercel auto-detect the Next.js framework
-- ✅ Use explicit build/install commands that cd into `frontend-web`
-
-### Alternative: Use Project Context
-
-If dashboard shows "Cannot auto-detect framework":
-
-1. Go to **Settings → General → Root Directory**
-2. Click "Browse" and select `frontend-web` folder
-3. Vercel will auto-detect Next.js from `frontend-web/package.json`
-4. Leave Build/Output settings as defaults
-
-**Then in `vercel.json`, you can simplify to:**
-```json
-{
-  "version": 2
-}
-```
+- ⚠️ **Set Root Directory to `frontend-web`** in dashboard
+- ⚠️ **DON'T** override Output Directory
+- ✅ Use `projectSettings.rootDirectory` in vercel.json
+- ✅ Let Vercel handle everything else
 
 ---
 
-## 🪄 Expected Successful Log Output
+## 🪄 Expected Successful Build Output
 
-### ✅ Correct Build Log (You Should See):
+### ✅ Correct Build Log:
 
 ```bash
-=== Cloning repo ===
-Cloning from GitHub...
-
 === Installing Dependencies ===
-Running "cd frontend-web && npm install"
-npm WARN deprecated... (ignore these)
+Running npm install from frontend-web/
 added 1205 packages in 15s
 
 === Building Application ===
-Running "cd frontend-web && npm run build"
+Running npm run build from frontend-web/
 > next build
 
 ✔ Compiled successfully
 
-Creating an optimized production build
-Compiled successfully
-
-Linting and checking validity of types
-Generating static pages (0/10) [===================>] 100%
-Generating dynamic routes (0/2) [===================>] 100%
-
-Route (app)                              Size     First Load JS
-┌ ● /                                     5.2 kB     132.5 kB
-└ ○ /test                                 2.8 kB     130.1 kB
-
-● (SSG) Static pages
-○ (Static) Static routes
-
-=== Deploying ===
-Uploading: 100%
-Lambda functions created: 0
-Serverless functions created: 0
-Initializing...
-
-✔ Deployment complete
-
-✓ Ready in 45s
-```
-
-### ✅ Routes You Should See:
-
-```
-Route (app):
-  ● / (SSG)           → Homepage
-  ○ /test (Static)    → Test page
-```
-
-### ❌ What You Were Seeing (Before Fix):
-
-```
-Route (app):
-  ○ /404 (Static)     → Only 404 page
+Route (app):                    Size
+┌ ● /                          5.2 kB
+└ ○ /test                      2.8 kB
 ```
 
 ---
 
-## 🔧 Additional Troubleshooting
+## 🎯 Understanding the Concept
 
-### If you still get 404:
+### Why DEPLOYMENT_NOT_FOUND?
 
-1. **Check Environment Variables:**
-   ```bash
-   # In Vercel Dashboard → Settings → Environment Variables
-   NEXT_PUBLIC_API_URL=https://your-api-url.com
-   ```
+Vercel's architecture requires:
+1. **Project Root** - Where the Next.js `package.json` lives
+2. **Build Context** - Where files are relative to
+3. **Output Mapping** - Where `.next` folder gets created
 
-2. **Clear Vercel Cache:**
-   - Go to Deployments tab
-   - Click "..." on latest deployment
-   - Select "Redeploy"
+**With `cd` commands:**
+```
+Root: /repo/
+cd: /repo/frontend-web/
+Build Output: /repo/frontend-web/.next
+Mapping: ❌ Confused - is root /repo/ or /repo/frontend-web/?
+```
 
-3. **Verify Build Output:**
-   ```
-   Look for: "Generating static pages (10/10) ✓"
-   NOT: "Generating static pages (0/10)" ❌
-   ```
+**With `rootDirectory`:**
+```
+Root: /repo/frontend-web/ (explicitly set)
+Build Output: /repo/frontend-web/.next
+Mapping: ✅ Clear - root is /repo/frontend-web/
+```
 
-4. **Check Next.js Version:**
-   ```json
-   // frontend-web/package.json
-   "next": "^14.0.0"  // Should be 13+ for App Router
-   ```
+### Mental Model
 
-### Common Issues:
-
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| "Only 404 page" | Building from root | Add `cd frontend-web` to buildCommand |
-| "Framework not detected" | No `package.json` at root | Install deps in `frontend-web` |
-| "Build failed" | Missing dependencies | Check installCommand |
-| "Routes not found" | OutputDirectory override | Remove from vercel.json |
+Think of it like this:
+- **Without rootDirectory**: You're trying to tell someone "go into the kitchen and cook" but they don't know which house.
+- **With rootDirectory**: You're saying "the kitchen is at 123 Main St (rootDirectory). Now cook (build)."
 
 ---
 
-## 📋 Quick Checklist
+## 🔍 Recognizing This Pattern
 
-Before deploying, ensure:
+### Warning Signs:
+- ✅ Using `cd` in build commands
+- ✅ Building monorepo without setting root directory
+- ✅ Multiple package.json files in different folders
+- ✅ "Cannot auto-detect framework" errors
 
-- [x] `vercel.json` uses minimal config (no outputDirectory)
-- [x] `.vercelignore` excludes all folders except `frontend-web`
-- [x] `frontend-web/src/app/page.tsx` exists
-- [x] Build command uses `cd frontend-web`
-- [x] Dashboard settings leave Output Directory empty
-- [x] Environment variables are set in Vercel dashboard
-- [x] Next.js version is 13+ (for App Router support)
+### Similar Mistakes:
+- Using `cd` in Dockerfile FROM clauses
+- Misconfiguring monorepo tooling (turborepo, nx)
+- Not setting working directory in CI/CD
+
+---
+
+## 📋 Deployment Steps
+
+1. **Commit the fixed vercel.json**
+2. **Push to GitHub**
+3. **In Vercel Dashboard → Settings → General**
+   - Set **Root Directory** to `frontend-web`
+4. **Redeploy** (or let auto-deploy happen)
+5. **Check logs** for successful build
 
 ---
 
 ## 🎯 Summary
 
-The fix required:
-1. ✅ Removing `outputDirectory` override from `vercel.json`
-2. ✅ Using explicit build commands that cd into `frontend-web`
-3. ✅ Letting Vercel auto-detect Next.js framework
-4. ✅ Keeping configuration minimal and clean
+The fix:
+1. ✅ Use `projectSettings.rootDirectory` instead of `cd` commands
+2. ✅ Set Root Directory in dashboard too
+3. ✅ Let Vercel handle Next.js detection automatically
 
-**Result:** Vercel now correctly builds the Next.js app from `frontend-web` folder and serves all routes properly.
+**Result:** Vercel knows exactly where your Next.js app is and deploys it correctly! 🚀

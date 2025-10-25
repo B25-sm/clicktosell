@@ -1,6 +1,8 @@
 {
-  "version": 2,
-  "buildCommand": "cd frontend-web && npm install && npm run build",
-  "installCommand": "cd frontend-web && npm install",
-  "framework": "nextjs"
+  "buildCommand": "npm install && npm run build",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "projectSettings": {
+    "rootDirectory": "frontend-web"
+  }
 }
