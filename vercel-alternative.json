@@ -7,15 +7,26 @@
       "config": {
         "distDir": ".next"
       }
+    },
+    {
+      "src": "backend/package.json",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
     }
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "/backend/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/frontend-web/$1"
     }
-  ]
+  ],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@next_public_api_url"
+  }
 }
-
-
-
