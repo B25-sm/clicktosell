@@ -35,10 +35,39 @@ console.log('Using PORT:', PORT);
 app.use(helmet());
 app.use(compression());
 app.use(morgan('combined'));
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
-  credentials: true
-}));
+// CORS configuration - Allow frontend connections
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001'
+    ];
+    
+    // Add environment-specific origins
+    if (process.env.CORS_ORIGIN) {
+      const envOrigins = process.env.CORS_ORIGIN.split(',');
+      allowedOrigins.push(...envOrigins);
+    }
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['X-Total-Count', 'X-Page-Count']
+};
+
+app.use(cors(corsOptions));
 
 // Rate limiting - Optimized for 10k daily users
 const limiter = rateLimit({
@@ -97,29 +126,271 @@ app.get('/api/health', (req, res) => {
 
 // Mock API endpoints for testing
 app.get('/api/v1/listings', (req, res) => {
+  const { page = 1, limit = 10, category, location, search } = req.query;
+  
+  // Mock data with more variety
+  const mockListings = [
+    {
+      id: '1',
+      title: 'iPhone 13 Pro Max 256GB',
+      price: 75000,
+      location: 'Mumbai, Maharashtra',
+      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+      category: 'Electronics',
+      description: 'Excellent condition, barely used iPhone 13 Pro Max with all original accessories.',
+      createdAt: '2024-01-15T10:30:00Z',
+      seller: {
+        id: 'user1',
+        name: 'John Doe',
+        rating: 4.8
+      }
+    },
+    {
+      id: '2',
+      title: 'MacBook Pro M2 14-inch',
+      price: 120000,
+      location: 'Delhi, NCR',
+      image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
+      category: 'Electronics',
+      description: 'MacBook Pro M2 chip, 16GB RAM, 512GB SSD. Perfect for professionals.',
+      createdAt: '2024-01-14T15:45:00Z',
+      seller: {
+        id: 'user2',
+        name: 'Jane Smith',
+        rating: 4.9
+      }
+    },
+    {
+      id: '3',
+      title: 'Samsung Galaxy S23 Ultra',
+      price: 65000,
+      location: 'Bangalore, Karnataka',
+      image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400',
+      category: 'Electronics',
+      description: 'Samsung Galaxy S23 Ultra with S Pen, 256GB storage.',
+      createdAt: '2024-01-13T09:20:00Z',
+      seller: {
+        id: 'user3',
+        name: 'Mike Johnson',
+        rating: 4.7
+      }
+    },
+    {
+      id: '4',
+      title: 'Sofa Set - 3+2+1',
+      price: 25000,
+      location: 'Pune, Maharashtra',
+      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400',
+      category: 'Furniture',
+      description: 'Comfortable 3+2+1 sofa set in excellent condition.',
+      createdAt: '2024-01-12T14:10:00Z',
+      seller: {
+        id: 'user4',
+        name: 'Sarah Wilson',
+        rating: 4.6
+      }
+    },
+    {
+      id: '5',
+      title: 'Honda City 2020',
+      price: 850000,
+      location: 'Chennai, Tamil Nadu',
+      image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400',
+      category: 'Vehicles',
+      description: 'Honda City 2020, single owner, well maintained, 25,000 km driven.',
+      createdAt: '2024-01-11T11:30:00Z',
+      seller: {
+        id: 'user5',
+        name: 'Raj Kumar',
+        rating: 4.8
+      }
+    }
+  ];
+
+  // Filter by category if provided
+  let filteredListings = mockListings;
+  if (category) {
+    filteredListings = mockListings.filter(listing => 
+      listing.category.toLowerCase() === category.toLowerCase()
+    );
+  }
+
+  // Filter by location if provided
+  if (location) {
+    filteredListings = filteredListings.filter(listing => 
+      listing.location.toLowerCase().includes(location.toLowerCase())
+    );
+  }
+
+  // Filter by search term if provided
+  if (search) {
+    const searchTerm = search.toLowerCase();
+    filteredListings = filteredListings.filter(listing => 
+      listing.title.toLowerCase().includes(searchTerm) ||
+      listing.description.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  // Pagination
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + parseInt(limit);
+  const paginatedListings = filteredListings.slice(startIndex, endIndex);
+
   res.json({
     success: true,
     data: {
-      listings: [
-        {
-          id: '1',
-          title: 'iPhone 13 Pro',
-          price: 50000,
-          location: 'Mumbai',
-          image: 'https://via.placeholder.com/300x200',
-          category: 'Electronics'
-        },
-        {
-          id: '2',
-          title: 'Samsung Galaxy S21',
-          price: 45000,
-          location: 'Delhi',
-          image: 'https://via.placeholder.com/300x200',
-          category: 'Electronics'
-        }
-      ],
-      total: 2
+      listings: paginatedListings,
+      total: filteredListings.length,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(filteredListings.length / limit)
     }
+  });
+});
+
+// Get single listing by ID
+app.get('/api/v1/listings/:id', (req, res) => {
+  const { id } = req.params;
+  
+  // Mock single listing data
+  const mockListing = {
+    id: id,
+    title: 'iPhone 13 Pro Max 256GB',
+    price: 75000,
+    location: 'Mumbai, Maharashtra',
+    images: [
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800',
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800',
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800'
+    ],
+    category: 'Electronics',
+    description: 'Excellent condition, barely used iPhone 13 Pro Max with all original accessories. No scratches, battery health 98%. Comes with original box, charger, and documentation.',
+    createdAt: '2024-01-15T10:30:00Z',
+    updatedAt: '2024-01-15T10:30:00Z',
+    seller: {
+      id: 'user1',
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      phone: '+91 98765 43210',
+      rating: 4.8,
+      totalSales: 45,
+      memberSince: '2022-03-15'
+    },
+    views: 156,
+    favorites: 23,
+    condition: 'Excellent',
+    brand: 'Apple',
+    model: 'iPhone 13 Pro Max'
+  };
+
+  res.json({
+    success: true,
+    data: mockListing
+  });
+});
+
+// Create new listing
+app.post('/api/v1/listings', (req, res) => {
+  const listingData = req.body;
+  
+  // Validate required fields
+  if (!listingData.title || !listingData.price || !listingData.category) {
+    return res.status(400).json({
+      success: false,
+      message: 'Missing required fields: title, price, category'
+    });
+  }
+
+  // Mock created listing
+  const newListing = {
+    id: Date.now().toString(),
+    ...listingData,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    views: 0,
+    favorites: 0
+  };
+
+  res.status(201).json({
+    success: true,
+    data: newListing,
+    message: 'Listing created successfully'
+  });
+});
+
+// Update listing
+app.put('/api/v1/listings/:id', (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  // Mock updated listing
+  const updatedListing = {
+    id: id,
+    ...updateData,
+    updatedAt: new Date().toISOString()
+  };
+
+  res.json({
+    success: true,
+    data: updatedListing,
+    message: 'Listing updated successfully'
+  });
+});
+
+// Delete listing
+app.delete('/api/v1/listings/:id', (req, res) => {
+  const { id } = req.params;
+
+  res.json({
+    success: true,
+    message: 'Listing deleted successfully',
+    data: { id }
+  });
+});
+
+// Get categories
+app.get('/api/v1/categories', (req, res) => {
+  const categories = [
+    { id: 'electronics', name: 'Electronics', icon: '📱', count: 1250 },
+    { id: 'furniture', name: 'Furniture', icon: '🪑', count: 890 },
+    { id: 'vehicles', name: 'Vehicles', icon: '🚗', count: 650 },
+    { id: 'fashion', name: 'Fashion', icon: '👕', count: 2100 },
+    { id: 'home-garden', name: 'Home & Garden', icon: '🏠', count: 750 },
+    { id: 'sports', name: 'Sports', icon: '⚽', count: 420 },
+    { id: 'books', name: 'Books', icon: '📚', count: 180 },
+    { id: 'toys', name: 'Toys & Games', icon: '🎮', count: 320 }
+  ];
+
+  res.json({
+    success: true,
+    data: categories
+  });
+});
+
+// Search listings
+app.get('/api/v1/search', (req, res) => {
+  const { q, category, location, minPrice, maxPrice, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+  
+  // Mock search results
+  const searchResults = {
+    listings: [],
+    total: 0,
+    query: q,
+    filters: {
+      category,
+      location,
+      minPrice,
+      maxPrice
+    },
+    sort: {
+      by: sortBy,
+      order: sortOrder
+    }
+  };
+
+  res.json({
+    success: true,
+    data: searchResults
   });
 });
 
@@ -224,3 +495,4 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+

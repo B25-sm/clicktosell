@@ -1,5 +1,4 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -302,11 +301,7 @@ const AppNavigator: React.FC = () => {
     return null; // Or a loading screen
   }
 
-  return (
-    <NavigationContainer>
-      {isAuthenticated ? <DrawerNavigator /> : <AuthNavigator />}
-    </NavigationContainer>
-  );
+  return isAuthenticated ? <DrawerNavigator /> : <AuthNavigator />;
 };
 
 export default AppNavigator;

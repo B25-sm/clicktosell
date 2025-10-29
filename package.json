@@ -9,13 +9,17 @@
     "mobile": "cd mobile-app && npx react-native start",
     "admin": "cd admin-panel && npm run dev",
     "install-all": "npm install && cd backend && npm install && cd ../frontend-web && npm install && cd ../mobile-app && npm install && cd ../admin-panel && npm install",
-    "dev": "node start-dev.js",
+    "dev": "node dev-start.js",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend-web && npm run dev",
     "dev:restart": "node restart-dev.js",
     "dev:concurrent": "concurrently \"npm run backend\" \"npm run web\"",
     "build": "cd frontend-web && npm install && npm run build",
     "build:all": "cd frontend-web && npm run build && cd ../admin-panel && npm run build",
     "test:connection": "node test-connection.js",
-    "test:frontend": "cd frontend-web && npm run dev"
+    "test:frontend": "cd frontend-web && npm run dev",
+    "setup": "node setup-connection.js",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend-web && npm install"
   },
   "keywords": [
     "classifieds",
@@ -35,5 +39,3 @@
     "redis": "^5.8.2"
   }
 }
-
-

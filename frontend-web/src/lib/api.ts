@@ -53,10 +53,39 @@ export interface Listing {
   price: number;
   location: string;
   image: string;
+  images?: string[];
   category: string;
   description?: string;
   createdAt?: string;
   updatedAt?: string;
+  seller?: {
+    id: string;
+    name: string;
+    rating: number;
+    totalSales?: number;
+    memberSince?: string;
+  };
+  views?: number;
+  favorites?: number;
+  condition?: string;
+  brand?: string;
+  model?: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  icon: string;
+  count: number;
+}
+
+export interface SearchFilters {
+  category?: string;
+  location?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface ApiResponse<T> {
@@ -70,6 +99,18 @@ export interface ListingsResponse {
   total: number;
   page?: number;
   limit?: number;
+  totalPages?: number;
+}
+
+export interface SearchResponse {
+  listings: Listing[];
+  total: number;
+  query?: string;
+  filters?: SearchFilters;
+  sort?: {
+    by: string;
+    order: string;
+  };
 }
 
 // API Service Functions
@@ -131,6 +172,28 @@ export const apiService = {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('authToken');
     }
+  },
+
+  // Get categories
+  async getCategories(): Promise<ApiResponse<Category[]>> {
+    const response = await apiClient.get('/api/v1/categories');
+    return response.data;
+  },
+
+  // Search listings
+  async searchListings(params: {
+    q?: string;
+    category?: string;
+    location?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+  }): Promise<ApiResponse<SearchResponse>> {
+    const response = await apiClient.get('/api/v1/search', { params });
+    return response.data;
   },
 
   // Test API connection

@@ -1,19 +1,24 @@
 export const colors = {
-  // Primary brand colors
-  primary: '#183b45',
-  primaryLight: '#4a6572',
-  primaryDark: '#0d252c',
+  // Primary brand colors - Midnight Blue
+  primary: '#0A0F2C',
+  primaryLight: '#1A2342',
+  primaryDark: '#050815',
   
-  // Secondary colors
-  secondary: '#f5f5f5',
-  secondaryLight: '#ffffff',
-  secondaryDark: '#e0e0e0',
+  // Accent color - Warm Gold
+  accent: '#FFD100',
+  accentLight: '#FFE55A',
+  accentDark: '#E6BF00',
+  
+  // Support color - Soft Light Gray
+  support: '#E5E5E5',
+  supportLight: '#F5F5F5',
+  supportDark: '#D5D5D5',
   
   // Neutral colors
   white: '#ffffff',
   black: '#000000',
   gray: '#6b7280',
-  lightGray: '#e5e7eb',
+  lightGray: '#E5E5E5',
   darkGray: '#374151',
   
   // Background colors
@@ -22,7 +27,7 @@ export const colors = {
   card: '#ffffff',
   
   // Text colors
-  text: '#1f2937',
+  text: '#0A0F2C',
   textSecondary: '#6b7280',
   textLight: '#9ca3af',
   textInverse: '#ffffff',
@@ -45,7 +50,7 @@ export const colors = {
   infoDark: '#2563eb',
   
   // Border colors
-  border: '#e5e7eb',
+  border: '#E5E5E5',
   borderLight: '#f3f4f6',
   borderDark: '#d1d5db',
   
@@ -70,10 +75,10 @@ export const colors = {
   
   // Chat colors
   chat: {
-    sent: '#183b45',
-    received: '#f3f4f6',
+    sent: '#0A0F2C',
+    received: '#E5E5E5',
     sentText: '#ffffff',
-    receivedText: '#1f2937',
+    receivedText: '#0A0F2C',
     timestamp: '#9ca3af',
     online: '#22c55e',
     offline: '#6b7280',
@@ -81,22 +86,22 @@ export const colors = {
   
   // Rating colors
   rating: {
-    filled: '#fbbf24',
-    empty: '#e5e7eb',
+    filled: '#FFD100',
+    empty: '#E5E5E5',
   },
   
   // Price colors
   price: {
     original: '#ef4444',
     discounted: '#22c55e',
-    negotiable: '#f59e0b',
+    negotiable: '#FFD100',
   },
   
   // Status indicator colors
   status: {
     active: '#22c55e',
     inactive: '#6b7280',
-    pending: '#f59e0b',
+    pending: '#FFD100',
     sold: '#ef4444',
     featured: '#8b5cf6',
   },

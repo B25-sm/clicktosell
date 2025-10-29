@@ -1,78 +1,97 @@
 #!/usr/bin/env node
 
-const axios = require('axios');
+/**
+ * Connection test script for OLX Classifieds
+ * Tests the connection between frontend and backend
+ */
 
-const API_BASE_URL = 'http://localhost:5000';
+const BACKEND_URL = 'http://localhost:5000';
+const FRONTEND_URL = 'http://localhost:3000';
 
 async function testConnection() {
-  console.log('🧪 Testing Frontend-Backend Connection...\n');
+  console.log('🔍 Testing Backend & Frontend Connection...\n');
 
   try {
-    // Test 1: Backend Health Check
-    console.log('1️⃣ Testing Backend Health Check...');
-    const healthResponse = await axios.get(`${API_BASE_URL}/health`);
-    console.log('✅ Backend Health:', healthResponse.data.status);
-    console.log('   Message:', healthResponse.data.message);
-    console.log('   Uptime:', healthResponse.data.uptime, 'seconds\n');
+    // Test backend health
+    console.log('📡 Testing Backend Server...');
+    const backendResponse = await fetch(`${BACKEND_URL}/health`);
+    if (backendResponse.ok) {
+      const backendHealth = await backendResponse.json();
+      console.log('✅ Backend Server: OK');
+      console.log(`   Status: ${backendHealth.status}`);
+      console.log(`   Message: ${backendHealth.message}`);
+    } else {
+      throw new Error(`Backend health check failed: ${backendResponse.status}`);
+    }
 
-    // Test 2: API Health Check
-    console.log('2️⃣ Testing API Health Check...');
-    const apiHealthResponse = await axios.get(`${API_BASE_URL}/api/health`);
-    console.log('✅ API Health:', apiHealthResponse.data.status);
-    console.log('   Message:', apiHealthResponse.data.message);
-    console.log('   Timestamp:', apiHealthResponse.data.timestamp, '\n');
+    // Test API health
+    console.log('\n🔌 Testing API Endpoint...');
+    const apiResponse = await fetch(`${BACKEND_URL}/api/health`);
+    if (apiResponse.ok) {
+      const apiHealth = await apiResponse.json();
+      console.log('✅ API Endpoint: OK');
+      console.log(`   Status: ${apiHealth.status}`);
+    } else {
+      throw new Error(`API health check failed: ${apiResponse.status}`);
+    }
 
-    // Test 3: Listings API
-    console.log('3️⃣ Testing Listings API...');
-    const listingsResponse = await axios.get(`${API_BASE_URL}/api/v1/listings`);
-    console.log('✅ Listings API Response:');
-    console.log('   Success:', listingsResponse.data.success);
-    console.log('   Total Listings:', listingsResponse.data.data.total);
-    console.log('   Sample Listing:', listingsResponse.data.data.listings[0]?.title || 'No listings\n');
+    // Test listings endpoint
+    console.log('\n📋 Testing Listings API...');
+    const listingsResponse = await fetch(`${BACKEND_URL}/api/v1/listings`);
+    if (listingsResponse.ok) {
+      const listings = await listingsResponse.json();
+      console.log('✅ Listings API: OK');
+      console.log(`   Found ${listings.data.listings.length} listings`);
+    } else {
+      throw new Error(`Listings API failed: ${listingsResponse.status}`);
+    }
 
-    // Test 4: CORS Headers
-    console.log('4️⃣ Testing CORS Configuration...');
-    const corsTestResponse = await axios.get(`${API_BASE_URL}/api/health`, {
-      headers: {
-        'Origin': 'http://localhost:3000'
+    // Test categories endpoint
+    console.log('\n📂 Testing Categories API...');
+    const categoriesResponse = await fetch(`${BACKEND_URL}/api/v1/categories`);
+    if (categoriesResponse.ok) {
+      const categories = await categoriesResponse.json();
+      console.log('✅ Categories API: OK');
+      console.log(`   Found ${categories.data.length} categories`);
+    } else {
+      throw new Error(`Categories API failed: ${categoriesResponse.status}`);
+    }
+
+    // Test frontend (if running)
+    console.log('\n🌐 Testing Frontend Server...');
+    try {
+      const frontendResponse = await fetch(FRONTEND_URL, { 
+        method: 'GET',
+        signal: AbortSignal.timeout(5000)
+      });
+      if (frontendResponse.ok) {
+        console.log('✅ Frontend Server: OK');
+        console.log(`   Status: ${frontendResponse.status}`);
+      } else {
+        throw new Error(`Frontend returned ${frontendResponse.status}`);
       }
-    });
-    console.log('✅ CORS Test Passed');
-    console.log('   Access-Control-Allow-Origin:', corsTestResponse.headers['access-control-allow-origin'] || 'Not set\n');
+    } catch (error) {
+      console.log('⚠️  Frontend Server: Not running or not accessible');
+      console.log('   Make sure to start the frontend with: npm run dev:frontend');
+    }
 
-    console.log('🎉 All connection tests passed!');
-    console.log('\n📋 Summary:');
-    console.log('   • Backend server is running on port 5000');
-    console.log('   • API endpoints are responding correctly');
-    console.log('   • CORS is configured for frontend access');
-    console.log('   • Ready for frontend connection!');
-    
-    console.log('\n🌐 Next Steps:');
-    console.log('   1. Start frontend: cd frontend-web && npm run dev');
-    console.log('   2. Visit: http://localhost:3000');
-    console.log('   3. Test connection: http://localhost:3000/test');
+    console.log('\n🎉 Connection test completed successfully!');
+    console.log('\n📝 Next steps:');
+    console.log('   1. Start backend: npm run dev:backend');
+    console.log('   2. Start frontend: npm run dev:frontend');
+    console.log('   3. Or start both: npm run dev');
+    console.log('   4. Open http://localhost:3000 in your browser');
 
   } catch (error) {
     console.error('❌ Connection test failed:');
-    
-    if (error.code === 'ECONNREFUSED') {
-      console.error('   • Backend server is not running');
-      console.error('   • Start backend: cd backend && npm start');
-    } else if (error.response) {
-      console.error('   • HTTP Error:', error.response.status);
-      console.error('   • Response:', error.response.data);
+    if (error.code === 'ECONNREFUSED' || error.message.includes('fetch')) {
+      console.error('   Backend server is not running');
+      console.error('   Start it with: npm run dev:backend');
     } else {
-      console.error('   • Error:', error.message);
+      console.error(`   Error: ${error.message}`);
     }
-    
-    console.log('\n🔧 Troubleshooting:');
-    console.log('   1. Ensure backend is running: cd backend && npm start');
-    console.log('   2. Check if port 5000 is available');
-    console.log('   3. Verify no firewall blocking the connection');
-    
     process.exit(1);
   }
 }
 
-// Run the test
 testConnection();

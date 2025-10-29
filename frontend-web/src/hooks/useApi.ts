@@ -53,12 +53,36 @@ export function useApi<T>(
   };
 }
 
-export function useListings() {
-  return useApi(() => apiService.getListings());
+export function useListings(params?: {
+  page?: number;
+  limit?: number;
+  category?: string;
+  location?: string;
+  search?: string;
+}) {
+  return useApi(() => apiService.getListings(params), { immediate: false });
 }
 
 export function useListing(id: string) {
   return useApi(() => apiService.getListing(id));
+}
+
+export function useCategories() {
+  return useApi(() => apiService.getCategories());
+}
+
+export function useSearch(params: {
+  q?: string;
+  category?: string;
+  location?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+}) {
+  return useApi(() => apiService.searchListings(params), { immediate: false });
 }
 
 export function useHealthCheck() {

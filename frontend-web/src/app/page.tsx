@@ -1,12 +1,45 @@
 'use client';
 
 import { Metadata } from 'next';
-import { useListings } from '@/hooks/useApi';
+import { useListings, useCategories } from '@/hooks/useApi';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { PlaceholderImage } from '@/components/PlaceholderImage';
+import { ConnectionTest } from '@/components/ConnectionTest';
+import { formatCurrency } from '@/lib/utils';
 
 export default function HomePage() {
-  const { data: listingsData, loading, error } = useListings();
+  const { data: listingsData, loading, error } = useListings({ limit: 6 });
+  const { data: categoriesData } = useCategories();
+  
+  // Mock data for when API is not available
+  const mockListings = {
+    listings: [
+      {
+        id: '1',
+        title: 'iPhone 13 Pro Max',
+        price: 75000,
+        location: 'Mumbai, Maharashtra',
+        image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
+        category: 'Electronics'
+      },
+      {
+        id: '2',
+        title: 'MacBook Pro M2',
+        price: 120000,
+        location: 'Delhi, NCR',
+        image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400',
+        category: 'Electronics'
+      },
+      {
+        id: '3',
+        title: 'Samsung Galaxy S23',
+        price: 65000,
+        location: 'Bangalore, Karnataka',
+        image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400',
+        category: 'Electronics'
+      }
+    ]
+  };
   return (
     <div className="min-h-screen bg-[color:var(--bg,theme(colors.brand.gray))]">
       {/* Header */}
@@ -50,17 +83,20 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12 text-[color:theme(colors.brand.midnight)]">Popular Categories</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-            {[
-              { name: 'Electronics', icon: '📱' },
-              { name: 'Furniture', icon: '🪑' },
-              { name: 'Vehicles', icon: '🚗' },
-              { name: 'Fashion', icon: '👕' },
-              { name: 'Home & Garden', icon: '🏠' },
-              { name: 'Sports', icon: '⚽' },
-            ].map((category) => (
+            {(categoriesData || [
+              { name: 'Electronics', icon: '📱', count: 0 },
+              { name: 'Furniture', icon: '🪑', count: 0 },
+              { name: 'Vehicles', icon: '🚗', count: 0 },
+              { name: 'Fashion', icon: '👕', count: 0 },
+              { name: 'Home & Garden', icon: '🏠', count: 0 },
+              { name: 'Sports', icon: '⚽', count: 0 },
+            ]).slice(0, 6).map((category) => (
               <div key={category.name} className="text-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition cursor-pointer border border-[color:theme(colors.brand.gray)]">
                 <div className="text-3xl mb-2">{category.icon}</div>
                 <div className="text-sm font-medium text-gray-700">{category.name}</div>
+                {category.count > 0 && (
+                  <div className="text-xs text-gray-500 mt-1">{category.count} items</div>
+                )}
               </div>
             ))}
           </div>
@@ -90,9 +126,9 @@ export default function HomePage() {
             </div>
           )}
           
-          {listingsData && (
+          {(listingsData || mockListings) && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {listingsData.listings.map((item) => (
+              {(listingsData || mockListings).listings.map((item) => (
                 <div key={item.id} className="bg-white border border-[color:theme(colors.brand.gray)] rounded-lg shadow-sm hover:shadow-md transition">
                   <div className="p-4">
                     <div className="aspect-w-16 aspect-h-9 mb-3">
@@ -104,7 +140,7 @@ export default function HomePage() {
                       />
                     </div>
                     <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
-                    <p className="text-[color:theme(colors.brand.midnight)] font-bold text-xl mb-2">₹{item.price.toLocaleString()}</p>
+                    <p className="text-[color:theme(colors.brand.midnight)] font-bold text-xl mb-2">{formatCurrency(item.price, 'INR', 'en-IN')}</p>
                     <p className="text-gray-600 text-sm">{item.location}</p>
                     <p className="text-gray-500 text-xs mt-1">{item.category}</p>
                   </div>
@@ -113,7 +149,7 @@ export default function HomePage() {
             </div>
           )}
           
-          {!loading && !error && listingsData && listingsData.listings.length === 0 && (
+          {!loading && !error && (listingsData || mockListings) && (listingsData || mockListings).listings.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-600">No listings available at the moment.</p>
             </div>
@@ -159,6 +195,9 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Connection Test Component */}
+      <ConnectionTest />
     </div>
   );
 }

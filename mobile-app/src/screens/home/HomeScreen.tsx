@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
+  Text,
   ScrollView,
   RefreshControl,
   StyleSheet,
@@ -9,12 +10,12 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
-import Header from '../../components/layout/Header';
-import SearchBar from '../../components/search/SearchBar';
-import CategoryGrid from '../../components/categories/CategoryGrid';
-import FeaturedListings from '../../components/listings/FeaturedListings';
-import RecentListings from '../../components/listings/RecentListings';
-import LocationBanner from '../../components/common/LocationBanner';
+// import Header from '../../components/layout/Header';
+// import SearchBar from '../../components/search/SearchBar';
+// import CategoryGrid from '../../components/categories/CategoryGrid';
+// import FeaturedListings from '../../components/listings/FeaturedListings';
+// import RecentListings from '../../components/listings/RecentListings';
+// import LocationBanner from '../../components/common/LocationBanner';
 import LoadingScreen from '../../components/ui/LoadingScreen';
 import ErrorMessage from '../../components/ui/ErrorMessage';
 
@@ -97,7 +98,7 @@ const HomeScreen: React.FC = () => {
         translucent={false}
       />
       
-      <Header />
+      {/* <Header /> */}
       
       <ScrollView
         style={styles.scrollContainer}
@@ -111,47 +112,22 @@ const HomeScreen: React.FC = () => {
           />
         }
       >
-        {/* Location Banner */}
-        {currentLocation && (
-          <LocationBanner
-            location={currentLocation}
-            onChangeLocation={requestLocation}
-          />
-        )}
-
-        {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <SearchBar
-            onSearch={handleSearch}
-            placeholder="Search for anything..."
-          />
-        </View>
-
-        {/* Categories */}
-        <View style={styles.section}>
-          <CategoryGrid
-            categories={categories}
-            onCategorySelect={handleCategorySelect}
-          />
-        </View>
-
-        {/* Featured Listings */}
-        {featuredListings.length > 0 && (
-          <View style={styles.section}>
-            <FeaturedListings
-              listings={featuredListings}
-              onListingPress={handleListingPress}
-            />
-          </View>
-        )}
-
-        {/* Recent Listings */}
-        <View style={[styles.section, styles.lastSection]}>
-          <RecentListings
-            listings={recentListings}
-            onListingPress={handleListingPress}
-            isLoading={isLoading}
-          />
+        {/* <LocationBanner /> */}
+        {/* <SearchBar /> */}
+        {/* <CategoryGrid /> */}
+        {/* <FeaturedListings /> */}
+        {/* <RecentListings /> */}
+        
+        <View style={{ padding: 20 }}>
+          <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>
+            Welcome to Classifieds App! 🎉
+          </Text>
+          <Text style={{ fontSize: 16, marginBottom: 10 }}>
+            Home Screen with beautiful UI coming soon...
+          </Text>
+          <Text style={{ fontSize: 14, color: colors.textSecondary }}>
+            Brand Colors: Midnight Blue #0A0F2C, Warm Gold #FFD100
+          </Text>
         </View>
       </ScrollView>
     </View>

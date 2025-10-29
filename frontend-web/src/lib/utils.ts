@@ -31,7 +31,7 @@ export function formatCurrency(
       EUR: '€',
       GBP: '£',
     };
-    return `${symbols[currency] || currency} ${amount.toLocaleString()}`;
+    return `${symbols[currency] || currency} ${amount.toLocaleString('en-IN')}`;
   }
 }
 

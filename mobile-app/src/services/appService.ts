@@ -8,9 +8,10 @@ export function getWebsocketUrl(): string {
   return WS_URL;
 }
 
-export function initializeApp(): void {
-  // Place to initialize any services that need URLs
-  // Example: configure axios or socket.io here
-}
+export const initializeApp = async () => {
+  // Initialize app services
+  // Setup notifications, analytics, etc.
+  console.log('App initialized');
+};
 
 
