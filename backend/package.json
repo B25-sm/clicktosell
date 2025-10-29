@@ -6,8 +6,10 @@
   "scripts": {
     "start": "node fixed-server.js",
     "dev": "nodemon fixed-server.js",
+    "build": "echo 'No build step required for Node.js'",
     "test": "jest",
-    "seed": "node scripts/seedDatabase.js"
+    "seed": "node scripts/seedDatabase.js",
+    "postinstall": "echo 'Backend dependencies installed successfully'"
   },
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^3.4.2",

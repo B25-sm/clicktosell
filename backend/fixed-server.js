@@ -45,7 +45,11 @@ const corsOptions = {
       'http://localhost:3000',
       'http://localhost:3001',
       'http://127.0.0.1:3000',
-      'http://127.0.0.1:3001'
+      'http://127.0.0.1:3001',
+      // Vercel domains (will be added via CORS_ORIGIN env var)
+      'https://clicktosell.vercel.app',
+      // Custom domains (add your actual domains here)
+      'https://your-frontend-domain.com'
     ];
     
     // Add environment-specific origins
@@ -54,7 +58,12 @@ const corsOptions = {
       allowedOrigins.push(...envOrigins);
     }
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    // Check for Vercel and Render domains with wildcard matching
+    const isVercelDomain = origin && origin.endsWith('.vercel.app');
+    const isRenderDomain = origin && origin.endsWith('.onrender.com');
+    const isAllowedOrigin = allowedOrigins.indexOf(origin) !== -1;
+    
+    if (isAllowedOrigin || isVercelDomain || isRenderDomain) {
       callback(null, true);
     } else {
       console.log('CORS blocked origin:', origin);
@@ -103,7 +112,7 @@ app.use(express.urlencoded({
 // Trust proxy for accurate IP addresses behind load balancer
 app.set('trust proxy', 1);
 
-// Health check endpoint
+// Health check endpoint (Render uses this for health checks)
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
@@ -113,6 +122,11 @@ app.get('/health', (req, res) => {
     environment: process.env.NODE_ENV || 'development',
     version: '1.0.0'
   });
+});
+
+// Render-specific health check (alternative endpoint)
+app.get('/healthz', (req, res) => {
+  res.status(200).send('OK');
 });
 
 // API health check
