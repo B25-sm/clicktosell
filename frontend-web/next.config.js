@@ -10,10 +10,6 @@ const nextConfig = {
     ],
     formats: ['image/webp', 'image/avif'],
   },
-  env: {
-    CUSTOM_KEY: 'my-value',
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
-  },
   experimental: {
     serverComponentsExternalPackages: ['axios'],
   },
@@ -21,9 +17,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: process.env.NEXT_PUBLIC_API_URL 
-          ? `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`
-          : 'http://localhost:5000/api/:path*',
+        destination: 'https://clicktosell.onrender.com/api/:path*',
       },
     ];
   },

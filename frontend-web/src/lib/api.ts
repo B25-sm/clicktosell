@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE_URL = 'https://clicktosell.onrender.com';
 
 // Create axios instance with default configuration
 const apiClient: AxiosInstance = axios.create({

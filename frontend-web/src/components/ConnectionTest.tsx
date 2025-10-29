@@ -46,7 +46,7 @@ export function ConnectionTest() {
 
       // Test API health
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/health`);
+        const response = await fetch(`https://clicktosell.onrender.com/api/health`);
         if (response.ok) {
           setStatus(prev => ({ ...prev, api: 'connected' }));
         } else {
@@ -180,7 +180,7 @@ export function ConnectionTest() {
             Retry Test
           </button>
           <button
-            onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/health`, '_blank')}
+            onClick={() => window.open(`https://clicktosell.onrender.com/health`, '_blank')}
             className="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 transition"
           >
             View API
