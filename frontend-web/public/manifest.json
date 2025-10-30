@@ -1,7 +1,7 @@
 {
-  "name": "OLX Classifieds",
-  "short_name": "OLX",
-  "description": "Buy and sell anything locally with OLX Classifieds",
+  "name": "ClicktoSell",
+  "short_name": "ClicktoSell",
+  "description": "Buy and sell anything locally with ClicktoSell",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

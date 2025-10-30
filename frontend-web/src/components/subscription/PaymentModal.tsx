@@ -57,7 +57,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
           amount: data.data.order.amount,
           currency: data.data.order.currency,
-          name: 'OLX Classifieds',
+          name: 'ClicktoSell',
           description: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Subscription`,
           order_id: data.data.order.id,
           handler: async (response: any) => {

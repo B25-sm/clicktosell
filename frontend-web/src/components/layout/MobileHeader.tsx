@@ -21,7 +21,7 @@ interface MobileHeaderProps {
 }
 
 export default function MobileHeader({ 
-  title = "OLX Classifieds",
+  title = "ClicktoSell",
   showBackButton = false,
   showSearch = true,
   showPostButton = true,

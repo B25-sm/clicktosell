@@ -42,7 +42,7 @@ export default function HomePage() {
     ]
   };
   return (
-    <MobileLayout title="OLX Classifieds">
+    <MobileLayout title="ClicktoSell">
       <div className="min-h-screen bg-gradient-to-br from-brand-light to-brand-white">
       {/* Modern Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100 shadow-soft">
@@ -50,9 +50,9 @@ export default function HomePage() {
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-brand-primary to-green-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">O</span>
+                <span className="text-white font-bold text-lg">C</span>
               </div>
-              <h1 className="text-2xl font-bold gradient-text">OLX Classifieds</h1>
+              <h1 className="text-2xl font-bold gradient-text">ClicktoSell</h1>
             </div>
             <nav className="hidden md:flex space-x-8">
               <a href="/listings" className="text-brand-muted hover:text-brand-primary transition-colors duration-200 font-medium">Browse</a>
@@ -233,9 +233,9 @@ export default function HomePage() {
             <div className="md:col-span-1">
               <div className="flex items-center space-x-3 mb-6">
                 <div className="w-10 h-10 bg-gradient-to-br from-brand-primary to-green-600 rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">O</span>
+                  <span className="text-white font-bold text-lg">C</span>
                 </div>
-                <h3 className="text-2xl font-bold gradient-text-white">OLX Classifieds</h3>
+                <h3 className="text-2xl font-bold gradient-text-white">ClicktoSell</h3>
               </div>
               <p className="text-gray-300 mb-6 leading-relaxed">Buy and sell anything locally with confidence. Join our community of trusted users.</p>
               <div className="flex space-x-4">
@@ -280,7 +280,7 @@ export default function HomePage() {
           </div>
           <div className="border-t border-white/10 mt-12 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-gray-300 text-sm">&copy; 2024 OLX Classifieds. All rights reserved.</p>
+              <p className="text-gray-300 text-sm">&copy; 2024 ClicktoSell. All rights reserved.</p>
               <div className="flex items-center space-x-6 mt-4 md:mt-0">
                 <span className="text-gray-400 text-sm">Made with ❤️ for the community</span>
               </div>

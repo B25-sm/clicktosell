@@ -54,7 +54,7 @@ export default function VerifyEmailPage() {
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-[#0A0F2C]">OLX Classifieds</h1>
+            <h1 className="text-3xl font-bold text-[#0A0F2C]">ClicktoSell</h1>
             <div className="mt-6">
               <LoadingSpinner size="lg" />
               <h2 className="mt-4 text-2xl font-bold text-gray-900">
@@ -75,7 +75,7 @@ export default function VerifyEmailPage() {
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-[#0A0F2C]">OLX Classifieds</h1>
+            <h1 className="text-3xl font-bold text-[#0A0F2C]">ClicktoSell</h1>
             <div className="mt-6">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                 <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,7 +107,7 @@ export default function VerifyEmailPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-[#0A0F2C]">OLX Classifieds</h1>
+          <h1 className="text-3xl font-bold text-[#0A0F2C]">ClicktoSell</h1>
           <h2 className="mt-6 text-3xl font-bold text-gray-900">
             Verify your email
           </h2>

@@ -85,10 +85,10 @@ export function Header() {
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="w-12 h-12 bg-gradient-to-br from-brand-primary to-green-600 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-lg">
-                <span className="text-white font-bold text-xl">O</span>
+                <span className="text-white font-bold text-xl">C</span>
               </div>
               <span className="hidden sm:block text-2xl font-bold gradient-text">
-                OLX Classifieds
+                ClicktoSell
               </span>
             </Link>
 

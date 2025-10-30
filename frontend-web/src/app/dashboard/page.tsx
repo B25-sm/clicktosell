@@ -143,9 +143,9 @@ export default function DashboardPage() {
             <div className="flex justify-between items-center h-20">
               <Link href="/" className="flex items-center space-x-3 group">
                 <div className="w-12 h-12 bg-gradient-to-br from-brand-primary to-green-600 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-lg">
-                  <span className="text-white font-bold text-xl">O</span>
+                  <span className="text-white font-bold text-xl">C</span>
                 </div>
-                <h1 className="text-2xl font-bold gradient-text">OLX Classifieds</h1>
+                <h1 className="text-2xl font-bold gradient-text">ClicktoSell</h1>
               </Link>
               <div className="flex items-center space-x-4">
                 <Link href="/listings" className="text-brand-muted hover:text-brand-primary transition-colors duration-200 font-medium">
@@ -323,7 +323,6 @@ export default function DashboardPage() {
                             {stats?.totalFavorites || 0}
                           </p>
                         </div>
-                      </div>
                       </div>
                       <div className="flex items-center text-sm text-green-600">
                         <span className="font-semibold">+5%</span>
