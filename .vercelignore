@@ -1,3 +1,15 @@
+# Ignore everything by default
+*
+
+# Allow frontend and backend apps and root config
+!frontend-web/
+!backend/
+!package.json
+!vercel.json
+
+# Allow lockfiles for dependency caching
+!package-lock.json
+
 # Ignore everything except frontend-web
 *
 !frontend-web/
