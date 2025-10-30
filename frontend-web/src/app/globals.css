@@ -8,32 +8,160 @@
   }
   
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-brand-light text-brand-dark font-sans antialiased;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
   }
 
   html {
     scroll-behavior: smooth;
   }
+
+  /* Modern 2026 typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-brand-dark;
+    letter-spacing: -0.025em;
+  }
+
+  h1 {
+    @apply text-4xl lg:text-6xl;
+  }
+
+  h2 {
+    @apply text-3xl lg:text-5xl;
+  }
+
+  h3 {
+    @apply text-2xl lg:text-4xl;
+  }
+
+  h4 {
+    @apply text-xl lg:text-3xl;
+  }
+
+  h5 {
+    @apply text-lg lg:text-2xl;
+  }
+
+  h6 {
+    @apply text-base lg:text-xl;
+  }
+
+  /* Modern scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-brand-light;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-brand-primary rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-green-600;
+  }
 }
 
 @layer components {
+  /* Modern 2026 Button System */
   .btn {
-    @apply inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transform hover:scale-105 active:scale-95;
   }
 
   .btn-primary {
-    @apply btn bg-green-600 text-white hover:bg-green-700 active:bg-green-800;
+    @apply btn bg-brand-primary text-brand-white hover:bg-green-600 active:bg-green-700 shadow-lg hover:shadow-xl;
   }
 
   .btn-secondary {
-    @apply btn bg-white text-green-600 border border-green-200 hover:bg-green-50 active:bg-green-100;
+    @apply btn bg-brand-white text-brand-primary border-2 border-brand-primary hover:bg-brand-primary hover:text-brand-white active:bg-green-600;
   }
 
+  .btn-ghost {
+    @apply btn bg-transparent text-brand-primary hover:bg-green-50 active:bg-green-100;
+  }
+
+  .btn-gradient {
+    @apply btn bg-gradient-to-r from-brand-primary to-green-600 text-brand-white hover:from-green-600 hover:to-green-700 shadow-lg hover:shadow-xl;
+  }
+
+  /* Modern 2026 Input System */
   .input {
-    @apply block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 focus:border-green-500 focus:ring-1 focus:ring-green-500 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500;
+    @apply block w-full rounded-xl border-2 border-gray-200 bg-brand-white px-4 py-3 text-sm placeholder-brand-muted focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 transition-all duration-200;
   }
 
+  .input-floating {
+    @apply input peer placeholder-transparent;
+  }
+
+  .input-floating:focus {
+    @apply pt-6;
+  }
+
+  .input-floating:not(:placeholder-shown) {
+    @apply pt-6;
+  }
+
+  /* Modern 2026 Card System */
   .card {
-    @apply rounded-xl bg-white shadow-sm border border-gray-200;
+    @apply rounded-2xl bg-brand-white shadow-soft border border-gray-100 hover:shadow-medium transition-all duration-300 hover:-translate-y-1;
+  }
+
+  .card-gradient {
+    @apply card bg-gradient-to-br from-brand-white to-green-50;
+  }
+
+  .card-glass {
+    @apply card bg-white/80 backdrop-blur-sm border-white/20;
+  }
+
+  .card-hover {
+    @apply card hover:scale-105 hover:shadow-hard cursor-pointer;
+  }
+
+  /* Modern 2026 Badge System */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-primary {
+    @apply badge bg-brand-primary text-brand-white;
+  }
+
+  .badge-secondary {
+    @apply badge bg-green-100 text-brand-primary;
+  }
+
+  .badge-outline {
+    @apply badge border-2 border-brand-primary text-brand-primary bg-transparent;
+  }
+
+  /* Modern 2026 Loading States */
+  .loading-shimmer {
+    @apply relative overflow-hidden;
+  }
+
+  .loading-shimmer::before {
+    content: '';
+    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer;
+  }
+
+  /* Modern 2026 Glass Effects */
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+
+  .glass-strong {
+    @apply bg-white/20 backdrop-blur-lg border border-white/30;
+  }
+
+  /* Modern 2026 Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-primary to-green-600 bg-clip-text text-transparent;
+  }
+
+  .gradient-text-white {
+    @apply bg-gradient-to-r from-brand-white to-green-100 bg-clip-text text-transparent;
   }
 }

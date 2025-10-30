@@ -9,6 +9,10 @@ const {
   optionalAuth,
   requireOwnership 
 } = require('../middleware/auth');
+const { 
+  checkListingLimits, 
+  incrementListingUsage 
+} = require('../middleware/subscriptionLimits');
 const { asyncHandler, AppError, validationError } = require('../middleware/errorHandler');
 const { uploadMultipleFiles, deleteMultipleFiles } = require('../utils/upload');
 const logger = require('../utils/logger');
@@ -90,6 +94,139 @@ const createListingValidation = [
     .matches(/^[1-9][0-9]{5}$/)
     .withMessage('Invalid pincode format')
 ];
+
+// @route   GET /api/v1/listings/suggestions
+// @desc    Get search suggestions
+// @access  Public
+router.get('/suggestions', [
+  query('q').isLength({ min: 2, max: 100 }).withMessage('Query must be between 2 and 100 characters')
+], asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed',
+      errors: errors.array()
+    });
+  }
+
+  const { q } = req.query;
+  const limit = 10;
+
+  try {
+    // Get suggestions from listing titles
+    const titleSuggestions = await Listing.aggregate([
+      {
+        $match: {
+          title: { $regex: q, $options: 'i' },
+          status: 'active'
+        }
+      },
+      {
+        $group: {
+          _id: '$title',
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { count: -1 }
+      },
+      {
+        $limit: limit
+      },
+      {
+        $project: {
+          _id: 0,
+          suggestion: '$_id'
+        }
+      }
+    ]);
+
+    // Get suggestions from categories
+    const categorySuggestions = await Listing.aggregate([
+      {
+        $match: {
+          $or: [
+            { category: { $regex: q, $options: 'i' } },
+            { subcategory: { $regex: q, $options: 'i' } }
+          ],
+          status: 'active'
+        }
+      },
+      {
+        $group: {
+          _id: '$category',
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { count: -1 }
+      },
+      {
+        $limit: 5
+      },
+      {
+        $project: {
+          _id: 0,
+          suggestion: '$_id'
+        }
+      }
+    ]);
+
+    // Get suggestions from locations
+    const locationSuggestions = await Listing.aggregate([
+      {
+        $match: {
+          $or: [
+            { 'location.city': { $regex: q, $options: 'i' } },
+            { 'location.state': { $regex: q, $options: 'i' } }
+          ],
+          status: 'active'
+        }
+      },
+      {
+        $group: {
+          _id: '$location.city',
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { count: -1 }
+      },
+      {
+        $limit: 5
+      },
+      {
+        $project: {
+          _id: 0,
+          suggestion: '$_id'
+        }
+      }
+    ]);
+
+    // Combine and deduplicate suggestions
+    const allSuggestions = [
+      ...titleSuggestions.map(item => item.suggestion),
+      ...categorySuggestions.map(item => item.suggestion),
+      ...locationSuggestions.map(item => item.suggestion)
+    ];
+
+    const uniqueSuggestions = [...new Set(allSuggestions)].slice(0, limit);
+
+    res.json({
+      success: true,
+      data: {
+        suggestions: uniqueSuggestions
+      }
+    });
+  } catch (error) {
+    logger.error('Error fetching search suggestions:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch suggestions'
+    });
+  }
+}));
 
 // @route   GET /api/v1/listings
 // @desc    Get all listings with filters
@@ -360,6 +497,7 @@ router.get('/:id/views', asyncHandler(async (req, res) => {
 router.post('/', [
   authenticateToken,
   requireVerification,
+  checkListingLimits,
   upload.array('images', 10),
   ...createListingValidation
 ], asyncHandler(async (req, res) => {
@@ -460,6 +598,9 @@ router.post('/', [
     title: listing.title
   });
 
+  // Mark listing as created for usage increment
+  res.locals.listingCreated = true;
+
   res.status(201).json({
     success: true,
     message: 'Listing created successfully',
@@ -467,7 +608,7 @@ router.post('/', [
       listing: await listing.populate('seller', 'firstName lastName profilePicture rating')
     }
   });
-}));
+}), incrementListingUsage);
 
 // @route   PUT /api/v1/listings/:id
 // @desc    Update listing

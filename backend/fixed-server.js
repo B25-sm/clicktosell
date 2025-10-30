@@ -492,6 +492,12 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Import subscription routes
+const subscriptionRoutes = require('./routes/subscriptions');
+
+// Use subscription routes
+app.use('/api/v1/subscriptions', subscriptionRoutes);
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({

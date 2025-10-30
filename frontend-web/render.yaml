@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: olx-classifieds-frontend
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        fromSecret: next_public_api_url

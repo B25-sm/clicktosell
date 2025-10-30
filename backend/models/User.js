@@ -193,6 +193,30 @@ const userSchema = new mongoose.Schema({
   },
   permissions: [String],
 
+  // Subscription fields
+  subscription: {
+    currentPlan: {
+      type: String,
+      enum: ['basic', 'premium', 'unlimited'],
+      default: 'basic'
+    },
+    subscriptionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Subscription'
+    },
+    subscriptionStatus: {
+      type: String,
+      enum: ['active', 'expired', 'cancelled', 'suspended', 'pending'],
+      default: 'pending'
+    },
+    subscriptionExpiresAt: Date,
+    monthlyUsage: {
+      listingsCreated: { type: Number, default: 0 },
+      adsPosted: { type: Number, default: 0 },
+      lastResetDate: { type: Date, default: Date.now }
+    }
+  },
+
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
@@ -298,6 +322,75 @@ userSchema.methods.updateRating = function(newRating) {
   // Calculate new average
   this.rating.average = ((oldAverage * oldCount) + newRating) / this.rating.count;
   
+  return this.save();
+};
+
+// Subscription methods
+userSchema.methods.canCreateListing = function() {
+  // Check if user has active subscription
+  if (this.subscription.subscriptionStatus !== 'active') {
+    return false;
+  }
+
+  // Check if subscription has expired
+  if (this.subscription.subscriptionExpiresAt && this.subscription.subscriptionExpiresAt < new Date()) {
+    return false;
+  }
+
+  // For basic plan, check monthly limit
+  if (this.subscription.currentPlan === 'basic') {
+    return this.subscription.monthlyUsage.listingsCreated < 10;
+  }
+
+  // For premium and unlimited plans, unlimited listings
+  return true;
+};
+
+userSchema.methods.canPostAd = function() {
+  // Check if user has active subscription
+  if (this.subscription.subscriptionStatus !== 'active') {
+    return false;
+  }
+
+  // Check if subscription has expired
+  if (this.subscription.subscriptionExpiresAt && this.subscription.subscriptionExpiresAt < new Date()) {
+    return false;
+  }
+
+  // Check monthly ad limit
+  if (this.subscription.currentPlan === 'unlimited') {
+    return true; // Unlimited ads
+  }
+
+  return this.subscription.monthlyUsage.adsPosted < 10;
+};
+
+userSchema.methods.incrementListingUsage = function() {
+  if (this.subscription.currentPlan === 'basic') {
+    this.subscription.monthlyUsage.listingsCreated += 1;
+  }
+  return this.save();
+};
+
+userSchema.methods.incrementAdUsage = function() {
+  if (this.subscription.currentPlan !== 'unlimited') {
+    this.subscription.monthlyUsage.adsPosted += 1;
+  }
+  return this.save();
+};
+
+userSchema.methods.resetMonthlyUsage = function() {
+  this.subscription.monthlyUsage.listingsCreated = 0;
+  this.subscription.monthlyUsage.adsPosted = 0;
+  this.subscription.monthlyUsage.lastResetDate = new Date();
+  return this.save();
+};
+
+userSchema.methods.updateSubscription = function(subscriptionData) {
+  this.subscription.currentPlan = subscriptionData.plan;
+  this.subscription.subscriptionId = subscriptionData.subscriptionId;
+  this.subscription.subscriptionStatus = subscriptionData.status;
+  this.subscription.subscriptionExpiresAt = subscriptionData.expiresAt;
   return this.save();
 };
 

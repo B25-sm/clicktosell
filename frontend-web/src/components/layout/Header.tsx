@@ -78,16 +78,16 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100 shadow-soft">
       <div className="container-custom">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+        <div className="flex items-center justify-between h-20">
+          {/* Modern Logo */}
           <div className="flex items-center space-x-4">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-primary-900 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">O</span>
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-primary to-green-600 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-lg">
+                <span className="text-white font-bold text-xl">O</span>
               </div>
-              <span className="hidden sm:block text-xl font-bold text-primary-900">
+              <span className="hidden sm:block text-2xl font-bold gradient-text">
                 OLX Classifieds
               </span>
             </Link>
@@ -102,68 +102,64 @@ export function Header() {
             </div>
           </div>
 
-          {/* Search Bar - Hidden on mobile */}
+          {/* Modern Search Bar - Hidden on mobile */}
           <div className="hidden md:block flex-1 max-w-2xl mx-8">
             <SearchBar />
           </div>
 
           {/* Right side actions */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             {/* Mobile search icon */}
             <button
-              className="md:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+              className="md:hidden p-3 text-brand-muted hover:text-brand-primary hover:bg-green-50 rounded-xl transition-all duration-200"
               onClick={() => router.push('/search')}
             >
               <MagnifyingGlassIcon className="w-6 h-6" />
             </button>
 
-            {/* Post Ad Button */}
-            <Button
+            {/* Modern Post Ad Button */}
+            <button
               onClick={handlePostAd}
-              className="hidden sm:flex items-center space-x-2"
+              className="hidden sm:flex items-center space-x-2 btn-gradient px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
-              <PlusIcon className="w-4 h-4" />
+              <PlusIcon className="w-5 h-5" />
               <span>Sell</span>
-            </Button>
+            </button>
 
             {isAuthenticated ? (
               <>
-                {/* Favorites */}
+                {/* Modern Favorites */}
                 <button
                   onClick={handleFavorites}
-                  className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg relative"
+                  className="p-3 text-brand-muted hover:text-brand-primary hover:bg-green-50 rounded-xl relative transition-all duration-200 group"
                   title="Favorites"
                 >
-                  <HeartIcon className="w-6 h-6" />
+                  <HeartIcon className="w-6 h-6 group-hover:scale-110 transition-transform duration-200" />
                 </button>
 
-                {/* Chat */}
+                {/* Modern Chat */}
                 <button
                   onClick={handleChat}
-                  className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg relative"
+                  className="p-3 text-brand-muted hover:text-brand-primary hover:bg-green-50 rounded-xl relative transition-all duration-200 group"
                   title="Messages"
                 >
-                  <ChatBubbleLeftIcon className="w-6 h-6" />
+                  <ChatBubbleLeftIcon className="w-6 h-6 group-hover:scale-110 transition-transform duration-200" />
                   {unreadCount > 0 && (
-                    <Badge
-                      variant="error"
-                      size="sm"
-                      className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 flex items-center justify-center"
-                    >
+                    <div className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-bounce">
                       {unreadCount > 99 ? '99+' : unreadCount}
-                    </Badge>
+                    </div>
                   )}
                 </button>
 
-                {/* Notifications */}
+                {/* Modern Notifications */}
                 <div className="relative" ref={notificationRef}>
                   <button
                     onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                    className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg relative"
+                    className="p-3 text-brand-muted hover:text-brand-primary hover:bg-green-50 rounded-xl relative transition-all duration-200 group"
                     title="Notifications"
                   >
-                    <BellIcon className="w-6 h-6" />
-                    <div className="absolute top-1 right-1 w-2 h-2 bg-error-500 rounded-full"></div>
+                    <BellIcon className="w-6 h-6 group-hover:scale-110 transition-transform duration-200" />
+                    <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                   </button>
 
                   {isNotificationOpen && (
@@ -173,26 +169,26 @@ export function Header() {
                   )}
                 </div>
 
-                {/* User Menu */}
+                {/* Modern User Menu */}
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center space-x-2 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+                    className="flex items-center space-x-3 p-2 text-brand-muted hover:text-brand-primary hover:bg-green-50 rounded-xl transition-all duration-200 group"
                   >
                     {user?.profilePicture?.url ? (
                       <Image
                         src={user.profilePicture.url}
                         alt={user.firstName}
-                        width={32}
-                        height={32}
-                        className="w-8 h-8 rounded-full object-cover"
+                        width={36}
+                        height={36}
+                        className="w-9 h-9 rounded-full object-cover ring-2 ring-brand-primary/20 group-hover:ring-brand-primary/40 transition-all duration-200"
                       />
                     ) : (
-                      <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                        <UserIcon className="w-5 h-5 text-primary-600" />
+                      <div className="w-9 h-9 bg-gradient-to-br from-brand-primary to-green-600 rounded-full flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+                        <UserIcon className="w-5 h-5 text-white" />
                       </div>
                     )}
-                    <ChevronDownIcon className="hidden sm:block w-4 h-4" />
+                    <ChevronDownIcon className="hidden sm:block w-4 h-4 group-hover:rotate-180 transition-transform duration-200" />
                   </button>
 
                   {isUserMenuOpen && (
@@ -205,31 +201,33 @@ export function Header() {
                 </div>
               </>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3">
                 <Link
                   href="/auth/login"
-                  className="hidden sm:block px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                  className="hidden sm:block px-6 py-3 text-sm font-semibold text-brand-muted hover:text-brand-primary transition-colors duration-200"
                 >
                   Login
                 </Link>
                 <Link href="/auth/register">
-                  <Button>Sign Up</Button>
+                  <button className="btn-primary px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                    Sign Up
+                  </button>
                 </Link>
               </div>
             )}
 
-            {/* Mobile menu button */}
+            {/* Modern Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+              className="md:hidden p-3 text-brand-muted hover:text-brand-primary hover:bg-green-50 rounded-xl transition-all duration-200"
             >
               <Bars3Icon className="w-6 h-6" />
             </button>
           </div>
         </div>
 
-        {/* Mobile Search Bar */}
-        <div className="md:hidden pb-4">
+        {/* Modern Mobile Search Bar */}
+        <div className="md:hidden pb-6 px-4">
           <SearchBar />
         </div>
       </div>

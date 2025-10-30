@@ -5,14 +5,43 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  safelist: [
+    // Ensure brand color utilities are always generated
+    {
+      pattern: /(bg|text|border|from|to|via|ring)-brand-(primary|white|dark|light|muted)/,
+    },
+    {
+      pattern: /(bg|text|border)-green-(50|100|200|300|400|500|600|700|800|900|950)/,
+    },
+    {
+      pattern: /(animate|hover:animate)-(float|glow|shimmer|slide-in-right|slide-in-left|zoom-in|bounce-in|fade-in-up|scale-up)/,
+    },
+  ],
   theme: {
     extend: {
       colors: {
         // Brand palette
         brand: {
-          midnight: '#0A0F2C', // Primary
-          gold: '#FFD100',     // Accent
-          gray: '#E5E5E5',     // Support
+          primary: '#0A0F2C',   // Midnight Blue
+          white: '#ffffff',     // Pure White
+          dark: '#0A0F2C',      // Use Midnight Blue as dark base
+          light: '#E5E5E5',     // Soft Light Gray
+          muted: '#64748b',     // Muted text
+          accent: '#FFD100',    // Warm Gold
+        },
+        // Extended green palette
+        green: {
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#34B66C', // Primary brand color
+          600: '#16a34a',
+          700: '#15803d',
+          800: '#166534',
+          900: '#14532d',
+          950: '#052e16',
         },
         primary: {
           50: '#eef2ff',
@@ -118,6 +147,16 @@ module.exports = {
         'bounce-slow': 'bounce 2s infinite',
         'pulse-slow': 'pulse 3s infinite',
         'spin-slow': 'spin 3s linear infinite',
+        // Modern 2026 animations
+        'float': 'float 6s ease-in-out infinite',
+        'glow': 'glow 2s ease-in-out infinite alternate',
+        'shimmer': 'shimmer 2s linear infinite',
+        'slide-in-right': 'slideInRight 0.5s ease-out',
+        'slide-in-left': 'slideInLeft 0.5s ease-out',
+        'zoom-in': 'zoomIn 0.3s ease-out',
+        'bounce-in': 'bounceIn 0.6s ease-out',
+        'fade-in-up': 'fadeInUp 0.6s ease-out',
+        'scale-up': 'scaleUp 0.3s ease-out',
       },
       keyframes: {
         fadeIn: {
@@ -139,6 +178,45 @@ module.exports = {
         scaleIn: {
           '0%': { transform: 'scale(0.9)', opacity: '0' },
           '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        // Modern 2026 keyframes
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        glow: {
+          '0%': { boxShadow: '0 0 5px #34B66C, 0 0 10px #34B66C, 0 0 15px #34B66C' },
+          '100%': { boxShadow: '0 0 10px #34B66C, 0 0 20px #34B66C, 0 0 30px #34B66C' },
+        },
+        shimmer: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+        slideInRight: {
+          '0%': { transform: 'translateX(100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideInLeft: {
+          '0%': { transform: 'translateX(-100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        zoomIn: {
+          '0%': { transform: 'scale(0.5)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        bounceIn: {
+          '0%': { transform: 'scale(0.3)', opacity: '0' },
+          '50%': { transform: 'scale(1.05)' },
+          '70%': { transform: 'scale(0.9)' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        fadeInUp: {
+          '0%': { transform: 'translateY(30px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        scaleUp: {
+          '0%': { transform: 'scale(1)' },
+          '100%': { transform: 'scale(1.05)' },
         },
       },
       backdropBlur: {

@@ -3,6 +3,8 @@
 import { ReactNode } from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { SocketProvider } from '@/contexts/SocketContext';
+import { FavoritesProvider } from '@/contexts/FavoritesContext';
+import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 interface ProvidersProps {
@@ -14,7 +16,11 @@ export function Providers({ children }: ProvidersProps) {
     <ErrorBoundary>
       <AuthProvider>
         <SocketProvider>
-          {children}
+          <FavoritesProvider>
+            <SubscriptionProvider>
+              {children}
+            </SubscriptionProvider>
+          </FavoritesProvider>
         </SocketProvider>
       </AuthProvider>
     </ErrorBoundary>
