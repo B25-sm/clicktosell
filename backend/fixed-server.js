@@ -501,10 +501,16 @@ app.use((err, req, res, next) => {
 });
 
 // Import subscription routes
-const subscriptionRoutes = require('./routes/subscriptions');
-
-// Use subscription routes
-app.use('/api/v1/subscriptions', subscriptionRoutes);
+console.log('Loading subscription routes...');
+try {
+  const subscriptionRoutes = require('./routes/subscriptions');
+  app.use('/api/v1/subscriptions', subscriptionRoutes);
+  console.log('Subscription routes loaded successfully');
+} catch (error) {
+  console.error('Failed to load subscription routes:', error.message);
+  console.error('Stack:', error.stack);
+  // Continue without subscription routes for now
+}
 
 // 404 handler
 app.use('*', (req, res) => {
