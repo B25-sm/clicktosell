@@ -1,5 +1,12 @@
 const winston = require('winston');
 const path = require('path');
+const fs = require('fs');
+
+// Create logs directory if it doesn't exist FIRST
+const logsDir = path.join(__dirname, '../logs');
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { recursive: true });
+}
 
 // Define log format
 const logFormat = winston.format.combine(
@@ -65,13 +72,6 @@ if (process.env.NODE_ENV !== 'production') {
       })
     )
   }));
-}
-
-// Create logs directory if it doesn't exist
-const fs = require('fs');
-const logsDir = path.join(__dirname, '../logs');
-if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir, { recursive: true });
 }
 
 // Add custom methods for different log levels
