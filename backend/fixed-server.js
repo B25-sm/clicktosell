@@ -11,13 +11,19 @@ const app = express();
 
 // Initialize Sentry only if DSN is provided and valid
 if (process.env.SENTRY_DSN && process.env.SENTRY_DSN !== 'your_sentry_dsn_for_error_tracking' && process.env.SENTRY_DSN.startsWith('http')) {
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    tracesSampleRate: 1.0
-  });
-  
-  // Sentry request handler must be the first middleware
-  app.use(Sentry.Handlers.requestHandler());
+  try {
+    Sentry.init({
+      dsn: process.env.SENTRY_DSN,
+      tracesSampleRate: 1.0
+    });
+    
+    // Sentry request handler must be the first middleware (Sentry v7 API)
+    if (Sentry.Handlers && typeof Sentry.Handlers.requestHandler === 'function') {
+      app.use(Sentry.Handlers.requestHandler());
+    }
+  } catch (error) {
+    console.error('Failed to initialize Sentry:', error.message);
+  }
 }
 
 // Parse PORT safely, ensuring it's a number
@@ -479,7 +485,9 @@ app.get('/debug-sentry', () => {
 // Start server
 // Sentry error handler must be before any other error middleware (only if Sentry is initialized)
 if (process.env.SENTRY_DSN && process.env.SENTRY_DSN !== 'your_sentry_dsn_for_error_tracking' && process.env.SENTRY_DSN.startsWith('http')) {
-  app.use(Sentry.Handlers.errorHandler());
+  if (Sentry.Handlers && typeof Sentry.Handlers.errorHandler === 'function') {
+    app.use(Sentry.Handlers.errorHandler());
+  }
 }
 
 // Optional fallback error handler

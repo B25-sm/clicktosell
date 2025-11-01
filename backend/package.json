@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^3.4.2",
-    "@sentry/node": "^10.16.0",
+    "@sentry/node": "^7.120.0",
     "aws-sdk": "^2.1692.0",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
@@ -41,7 +41,6 @@
     "socket.io": "^4.7.2",
     "stripe": "^13.5.0",
     "twilio": "^4.23.0",
-    "@sentry/node": "^7.120.0",
     "uuid": "^9.0.1",
     "winston": "^3.17.0"
   },

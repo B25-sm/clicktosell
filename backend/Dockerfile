@@ -31,13 +31,8 @@ COPY . .
 # Create logs directory
 RUN mkdir -p logs
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S backend -u 1001
-
-# Change ownership of the app directory
-RUN chown -R backend:nodejs /app
-USER backend
+# Note: Removed non-root user setup for Render compatibility
+# Render's free tier doesn't need this and it can cause permission issues
 
 # Expose port
 EXPOSE 5000
