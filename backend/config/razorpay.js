@@ -2,20 +2,38 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const logger = require('../utils/logger');
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+// Initialize Razorpay only if credentials are provided
+let razorpay = null;
+if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+  try {
+    razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+    logger.info('Razorpay initialized successfully');
+  } catch (error) {
+    logger.warn('Failed to initialize Razorpay:', error.message);
+  }
+} else {
+  logger.warn('Razorpay credentials not provided. Payment features will be disabled.');
+}
 
 // Create payment order
-const createOrder = async (amount, currency = 'INR', receipt = null) => {
+const createOrder = async (amount, currency = 'INR', receipt = null, notes = {}) => {
+  if (!razorpay) {
+    return {
+      success: false,
+      error: 'Razorpay is not configured. Please provide RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET environment variables.',
+    };
+  }
+  
   try {
     const options = {
-      amount: amount * 100, // Razorpay expects amount in paise (multiply by 100)
+      amount: amount, // Amount is expected in paise, caller should pass it correctly
       currency: currency,
       receipt: receipt || `receipt_${Date.now()}`,
       payment_capture: 1, // Auto capture payment
+      notes: notes,
     };
 
     const order = await razorpay.orders.create(options);
@@ -35,6 +53,13 @@ const createOrder = async (amount, currency = 'INR', receipt = null) => {
 
 // Verify payment signature
 const verifyPayment = (orderId, paymentId, signature) => {
+  if (!process.env.RAZORPAY_KEY_SECRET) {
+    return {
+      success: false,
+      error: 'Razorpay is not configured',
+    };
+  }
+  
   try {
     const generatedSignature = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -64,6 +89,13 @@ const verifyPayment = (orderId, paymentId, signature) => {
 
 // Get payment details
 const getPaymentDetails = async (paymentId) => {
+  if (!razorpay) {
+    return {
+      success: false,
+      error: 'Razorpay is not configured',
+    };
+  }
+  
   try {
     const payment = await razorpay.payments.fetch(paymentId);
     logger.info(`Payment details fetched for: ${paymentId}`);
@@ -82,6 +114,13 @@ const getPaymentDetails = async (paymentId) => {
 
 // Refund payment
 const refundPayment = async (paymentId, amount = null, notes = {}) => {
+  if (!razorpay) {
+    return {
+      success: false,
+      error: 'Razorpay is not configured',
+    };
+  }
+  
   try {
     const refundData = {
       payment_id: paymentId,
@@ -109,6 +148,13 @@ const refundPayment = async (paymentId, amount = null, notes = {}) => {
 
 // Test Razorpay connection
 const testConnection = async () => {
+  if (!razorpay) {
+    return {
+      success: false,
+      error: 'Razorpay is not configured',
+    };
+  }
+  
   try {
     // Try to fetch account details (this will fail if credentials are wrong)
     const account = await razorpay.accounts.fetch();

@@ -3,9 +3,9 @@ const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const { authenticateToken } = require('../middleware/auth');
 const { User, Subscription } = require('../models');
-const razorpay = require('../config/razorpay');
+const { createOrder: createRazorpayOrder, verifyPayment, getPaymentDetails } = require('../config/razorpay');
 const logger = require('../utils/logger');
-const { asyncHandler, AppError, validationError } = require('../utils/errorHandler');
+const { asyncHandler, AppError, validationError } = require('../middleware/errorHandler');
 
 // @route   GET /api/v1/subscriptions/plans
 // @desc    Get available subscription plans
@@ -118,7 +118,7 @@ router.post('/purchase', [
     }
   };
 
-  const razorpayOrder = await razorpay.createOrder(
+  const razorpayOrder = await createRazorpayOrder(
     orderData.amount,
     orderData.currency,
     orderData.receipt,
@@ -165,14 +165,14 @@ router.post('/verify', [
   const { orderId, paymentId, signature } = req.body;
 
   // Verify payment with Razorpay
-  const verification = razorpay.verifyPayment(orderId, paymentId, signature);
+  const verification = verifyPayment(orderId, paymentId, signature);
   
   if (!verification.success) {
     throw new AppError('Payment verification failed', 400);
   }
 
   // Get payment details
-  const paymentDetails = await razorpay.getPaymentDetails(paymentId);
+  const paymentDetails = await getPaymentDetails(paymentId);
   if (!paymentDetails.success) {
     throw new AppError('Failed to get payment details', 500);
   }
@@ -349,7 +349,7 @@ router.post('/upgrade', [
     }
   };
 
-  const razorpayOrder = await razorpay.createOrder(
+  const razorpayOrder = await createRazorpayOrder(
     orderData.amount,
     orderData.currency,
     orderData.receipt,

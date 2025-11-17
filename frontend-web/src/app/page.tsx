@@ -1,6 +1,5 @@
 'use client';
 
-import { Metadata } from 'next';
 import { useListings, useCategories } from '@/hooks/useApi';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { PlaceholderImage } from '@/components/PlaceholderImage';

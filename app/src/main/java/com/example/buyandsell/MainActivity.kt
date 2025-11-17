@@ -7,10 +7,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.buyandsell.components.BottomNavigationBar
+import com.example.buyandsell.navigation.NavGraph
+import com.example.buyandsell.navigation.Screen
 import com.example.buyandsell.ui.theme.BuyandsellTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,29 +22,33 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BuyandsellTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    bottomBar = {
+                        // Show bottom bar only on main screens
+                        if (currentRoute in listOf(
+                                Screen.Home.route,
+                                Screen.Search.route,
+                                Screen.PostAd.route,
+                                Screen.ChatList.route,
+                                Screen.Profile.route
+                            )
+                        ) {
+                            BottomNavigationBar(navController = navController, currentRoute = currentRoute)
+                        }
+                    }
+                ) { paddingValues ->
+                    NavGraph(
+                        navController = navController,
+                        startDestination = Screen.Home.route,
+                        modifier = Modifier.padding(paddingValues)
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BuyandsellTheme {
-        Greeting("Android")
     }
 }

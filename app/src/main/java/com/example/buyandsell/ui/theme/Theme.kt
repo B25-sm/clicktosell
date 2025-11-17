@@ -10,27 +10,39 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.example.buyandsell.ui.theme.AccentGold
+import com.example.buyandsell.ui.theme.DarkPrimary
+import com.example.buyandsell.ui.theme.DarkSurface
+import com.example.buyandsell.ui.theme.DarkOnSurface
+import com.example.buyandsell.ui.theme.PrimaryBlue
+import com.example.buyandsell.ui.theme.SecondaryWhite
+import com.example.buyandsell.ui.theme.LightGray
+import com.example.buyandsell.ui.theme.LightOnSurface
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = AccentGold,
+    secondary = DarkPrimary,
+    tertiary = PrimaryBlue,
+    background = DarkSurface,
+    surface = DarkSurface,
+    onPrimary = DarkPrimary,
+    onSecondary = SecondaryWhite,
+    onTertiary = SecondaryWhite,
+    onBackground = DarkOnSurface,
+    onSurface = DarkOnSurface
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = PrimaryBlue,
+    secondary = AccentGold,
+    tertiary = LightGray,
+    background = SecondaryWhite,
+    surface = SecondaryWhite,
+    onPrimary = SecondaryWhite,
+    onSecondary = PrimaryBlue,
+    onTertiary = PrimaryBlue,
+    onBackground = LightOnSurface,
+    onSurface = LightOnSurface
 )
 
 @Composable

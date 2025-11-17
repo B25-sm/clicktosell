@@ -1,12 +1,22 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
 
-react {
-    autolinkLibrariesWithApp()
-}
-
 def enableProguardInReleaseBuilds = false
 def jscFlavor = 'org.webkit:android-jsc:+'
+def FLIPPER_VERSION = '0.125.0'
+
+// Check if Hermes is enabled
+def hermesEnabled = false
+try {
+    def reactProperties = new Properties()
+    file("../../node_modules/react-native/package.json").withInputStream { reactProperties.load(it) }
+    def reactNativeVersion = reactProperties.getProperty("version")
+    if (reactNativeVersion != null && reactNativeVersion.startsWith("0.7")) {
+        hermesEnabled = true
+    }
+} catch (Exception e) {
+    hermesEnabled = true // Default to true for newer RN versions
+}
 
 android {
     ndkVersion rootProject.ext.ndkVersion

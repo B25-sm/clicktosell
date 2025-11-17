@@ -1,9 +1,11 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { Providers } from './providers';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'ClicktoSell - Buy & Sell Anything',
@@ -13,13 +15,6 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
     apple: '/favicon.ico',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
-  themeColor: '#0A0F2C',
   manifest: '/manifest.json',
   keywords: ['classifieds', 'buy', 'sell', 'local', 'marketplace', 'electronics', 'furniture', 'vehicles'],
   authors: [{ name: 'ClicktoSell' }],
@@ -34,6 +29,14 @@ export const metadata: Metadata = {
     title: 'ClicktoSell - Buy & Sell Anything',
     description: 'Find great deals on electronics, furniture, vehicles, and more.',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#0A0F2C',
 };
 
 export default function RootLayout({

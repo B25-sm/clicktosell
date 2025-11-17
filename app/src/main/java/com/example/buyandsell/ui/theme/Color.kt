@@ -2,10 +2,18 @@ package com.example.buyandsell.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Brand Colors
+val PrimaryBlue = Color(0xFF183b45) // Dark Blue-Green
+val SecondaryWhite = Color(0xFFFFFFFF) // White
+val AccentGold = Color(0xFFFFD100) // Warm Gold
+val LightGray = Color(0xFFE5E5E5) // Soft Light Gray
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Dark theme colors
+val DarkPrimary = Color(0xFF0A0F2C) // Midnight Blue
+val DarkSurface = Color(0xFF1A1F3C)
+val DarkOnSurface = Color(0xFFE5E5E5)
+
+// Light theme colors
+val LightPrimary = PrimaryBlue
+val LightSurface = SecondaryWhite
+val LightOnSurface = Color(0xFF1C1B1F)

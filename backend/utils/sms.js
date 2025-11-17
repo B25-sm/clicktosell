@@ -5,11 +5,27 @@ const logger = require('./logger');
 let twilioClient = null;
 
 const initializeTwilio = () => {
-  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-    twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-    return true;
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  
+  // Validate that credentials exist and account SID starts with 'AC' as required by Twilio
+  if (accountSid && authToken && accountSid.trim() && authToken.trim() && accountSid.trim().startsWith('AC')) {
+    try {
+      twilioClient = twilio(accountSid.trim(), authToken.trim());
+      logger.info('Twilio initialized successfully');
+      return true;
+    } catch (error) {
+      logger.warn('Failed to initialize Twilio:', error.message);
+      return false;
+    }
+  } else {
+    if (accountSid || authToken) {
+      logger.warn('Twilio credentials are invalid. Account SID must start with "AC". SMS features will be disabled.');
+    } else {
+      logger.warn('Twilio credentials not provided. SMS features will be disabled.');
+    }
+    return false;
   }
-  return false;
 };
 
 // Initialize on module load

@@ -1,48 +1,31 @@
-# Ignore everything by default
-*
+###########################
+# Monorepo .vercelignore  #
+###########################
 
-# Allow frontend and backend apps and root config
-!frontend-web/
-!backend/
-!package.json
-!vercel.json
+# Keep source by default. Only ignore typical artifacts.
 
-# Allow lockfiles for dependency caching
-!package-lock.json
+# Dependencies
+**/node_modules
 
-# Ignore everything except frontend-web
-*
-!frontend-web/
-!package.json
-!vercel.json
-!node_modules/
+# Build outputs
+**/.next
+**/dist
+**/build
+**/.vercel
+**/.turbo
 
-# Specifically ignore these directories
-app/
-backend/
-mobile-app/
-admin-panel/
-olx-classifieds/
-scripts/
-gradle/
-nginx/
+# Logs
+**/*.log
+**/logs
 
-# Ignore build artifacts and logs
-*.log
-logs/
-build/
-.next/
-dist/
-
-# Ignore environment files
+# Environment files
 .env
 .env.local
 .env.*.local
 *.env
 
-# Ignore documentation
-*.md
-!README.md
+# OS/editor junk
+.DS_Store
+*.swp
 
-
-
+# Keep documentation by default
