@@ -264,7 +264,7 @@ export default function RegisterPage() {
                   Terms and Conditions
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy" className="text-[#0A0F2C] hover:text-[#0A0F2C]/80">
+                <Link href="/privacy-policy" className="text-[#0A0F2C] hover:text-[#0A0F2C]/80">
                   Privacy Policy
                 </Link>
               </label>

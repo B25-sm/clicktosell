@@ -272,8 +272,10 @@ export default function HomePage() {
               <ul className="space-y-3">
                 <li><a href="#" className="text-gray-300 hover:text-brand-primary transition-colors duration-200">About Us</a></li>
                 <li><a href="#" className="text-gray-300 hover:text-brand-primary transition-colors duration-200">Careers</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-brand-primary transition-colors duration-200">Privacy Policy</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-brand-primary transition-colors duration-200">Terms of Service</a></li>
+                <li><a href="/privacy-policy" className="text-gray-300 hover:text-brand-primary transition-colors duration-200">Privacy Policy</a></li>
+                <li><a href="/terms" className="text-gray-300 hover:text-brand-primary transition-colors duration-200">Terms of Service</a></li>
+                <li><a href="/refund-policy" className="text-gray-300 hover:text-brand-primary transition-colors duration-200">Refund &amp; Cancellation</a></li>
+                <li><a href="/shipping-policy" className="text-gray-300 hover:text-brand-primary transition-colors duration-200">Shipping &amp; Delivery</a></li>
               </ul>
             </div>
           </div>
